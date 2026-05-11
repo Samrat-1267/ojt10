@@ -1,45 +1,194 @@
-/* CSS to demonstrate Django integration with home.html and script.js */
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    margin: 0;
-    padding: 20px;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
 }
 
-h1 {
-    color: #333;
-    text-align: center;
+body{
+    background:#0f172a;
+    color:white;
+    overflow-x:hidden;
 }
 
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+/* HERO */
+
+.hero{
+    height:100vh;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    text-align:center;
 }
 
-.button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+.overlay{
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:radial-gradient(circle at top right,
+    rgba(0,255,150,0.15), transparent 40%);
 }
 
-.button:hover {
-    background-color: #45a049;
+.hero-content{
+    z-index:2;
+    animation:fadeIn 1.5s ease;
 }
 
-/* Styles for elements manipulated by script.js */
-#demo-text {
-    color: blue;
-    font-size: 18px;
+.hero h1{
+    font-size:4rem;
+    margin-bottom:20px;
+    color:#00ff99;
 }
 
-.hidden {
-    display: none;
+.hero p{
+    max-width:600px;
+    font-size:1.2rem;
+    margin:auto;
+    line-height:1.7;
+}
+
+.hero button{
+    margin-top:30px;
+    padding:15px 35px;
+    border:none;
+    background:#00ff99;
+    color:#000;
+    font-weight:bold;
+    border-radius:50px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.hero button:hover{
+    transform:scale(1.1);
+}
+
+/* FEATURES */
+
+.features{
+    padding:100px 10%;
+    text-align:center;
+}
+
+.features h2{
+    font-size:3rem;
+    margin-bottom:60px;
+}
+
+.cards{
+    display:flex;
+    gap:30px;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+.card{
+    background:#1e293b;
+    padding:40px;
+    width:300px;
+    border-radius:20px;
+    transition:0.4s;
+    box-shadow:0 0 20px rgba(0,0,0,0.3);
+}
+
+.card:hover{
+    transform:translateY(-10px);
+    background:#334155;
+}
+
+.card h3{
+    margin-bottom:20px;
+    color:#00ff99;
+}
+
+/* STATS */
+
+.stats{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    flex-wrap:wrap;
+    padding:80px 10%;
+    background:#111827;
+}
+
+.stat-box{
+    text-align:center;
+}
+
+.counter{
+    font-size:4rem;
+    color:#00ff99;
+}
+
+/* INTERACTIVE */
+
+.interactive{
+    padding:100px 10%;
+    text-align:center;
+}
+
+.fact-box{
+    margin:40px auto;
+    background:#1e293b;
+    padding:30px;
+    border-radius:20px;
+    max-width:700px;
+    min-height:120px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.2rem;
+    transition:0.4s;
+}
+
+#factBtn{
+    padding:15px 30px;
+    border:none;
+    border-radius:50px;
+    background:#00ff99;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+/* FOOTER */
+
+footer{
+    text-align:center;
+    padding:30px;
+    background:#020617;
+}
+
+/* ANIMATION */
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(30px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+    .hero h1{
+        font-size:2.5rem;
+    }
+
+    .cards{
+        flex-direction:column;
+        align-items:center;
+    }
+
+    .stats{
+        flex-direction:column;
+    }
 }

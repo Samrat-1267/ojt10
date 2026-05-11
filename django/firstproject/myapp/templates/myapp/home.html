@@ -1,11 +1,103 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Code coffee ☕</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'myapp/style.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django Power</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <h1>Having code with coffee ☕</h1>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="overlay"></div>
+
+        <div class="hero-content">
+            <h1>Django Powers The Web</h1>
+            <p>
+                Fast. Secure. Scalable.
+                Build modern applications with confidence.
+            </p>
+
+            <button id="exploreBtn">Explore Django</button>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features">
+
+        <h2>Why Django Matters</h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>⚡ Fast Development</h3>
+                <p>
+                    Django comes with batteries included —
+                    authentication, admin panel, ORM and more.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>🔒 Secure</h3>
+                <p>
+                    Protection against SQL Injection,
+                    CSRF, XSS and clickjacking by default.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>📈 Scalable</h3>
+                <p>
+                    Used by Instagram, Spotify,
+                    Pinterest and many huge platforms.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats">
+
+        <div class="stat-box">
+            <h2 class="counter" data-target="100">0</h2>
+            <p>Built-in Features</p>
+        </div>
+
+        <div class="stat-box">
+            <h2 class="counter" data-target="95">0</h2>
+            <p>Security Score</p>
+        </div>
+
+        <div class="stat-box">
+            <h2 class="counter" data-target="1000">0</h2>
+            <p>Companies Using Django</p>
+        </div>
+
+    </section>
+
+    <!-- INTERACTIVE SECTION -->
+    <section class="interactive">
+
+        <h2>Interactive Django Facts</h2>
+
+        <div class="fact-box" id="factBox">
+            Click the button to discover Django facts!
+        </div>
+
+        <button id="factBtn">Show Fact</button>
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>Built with ❤️ using Django</p>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+
 </body>
 </html>

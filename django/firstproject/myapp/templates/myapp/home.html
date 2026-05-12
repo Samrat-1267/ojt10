@@ -4,98 +4,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Django Power</title>
+    <title>Django Universe</title>
 
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'CSS/style.css' %}">
 </head>
 <body>
 
-    <!-- HERO SECTION -->
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">DjangoVerse</div>
+
+        <ul class="nav-links">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'about' %}">About</a></li>
+            <li><a href="{% url 'profile' %}">Profile</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
     <section class="hero">
-        <div class="overlay"></div>
 
         <div class="hero-content">
-            <h1>Django Powers The Web</h1>
+            <h1 class="glow">Build Powerful Websites with Django</h1>
+
             <p>
-                Fast. Secure. Scalable.
-                Build modern applications with confidence.
+                Django is the modern Python framework for creators,
+                startups, AI developers, and scalable platforms.
             </p>
 
-            <button id="exploreBtn">Explore Django</button>
+            <div class="buttons">
+                <a href="{% url 'about' %}" class="btn primary-btn">
+                    Explore Django
+                </a>
+
+                <a href="{% url 'profile' %}" class="btn secondary-btn">
+                    Developer Profile
+                </a>
+            </div>
         </div>
-    </section>
 
-    <!-- FEATURES -->
-    <section class="features">
-
-        <h2>Why Django Matters</h2>
-
-        <div class="cards">
-
+        <div class="hero-card">
             <div class="card">
-                <h3>⚡ Fast Development</h3>
-                <p>
-                    Django comes with batteries included —
-                    authentication, admin panel, ORM and more.
-                </p>
+                <h2>⚡ Fast Development</h2>
+                <p>Build production-ready apps rapidly.</p>
             </div>
 
             <div class="card">
-                <h3>🔒 Secure</h3>
-                <p>
-                    Protection against SQL Injection,
-                    CSRF, XSS and clickjacking by default.
-                </p>
+                <h2>🔒 Secure</h2>
+                <p>Protection against common attacks built-in.</p>
             </div>
 
             <div class="card">
-                <h3>📈 Scalable</h3>
-                <p>
-                    Used by Instagram, Spotify,
-                    Pinterest and many huge platforms.
-                </p>
+                <h2>🚀 Scalable</h2>
+                <p>Used by Instagram, Spotify, and Mozilla.</p>
             </div>
-
-        </div>
-    </section>
-
-    <!-- STATS -->
-    <section class="stats">
-
-        <div class="stat-box">
-            <h2 class="counter" data-target="100">0</h2>
-            <p>Built-in Features</p>
-        </div>
-
-        <div class="stat-box">
-            <h2 class="counter" data-target="95">0</h2>
-            <p>Security Score</p>
-        </div>
-
-        <div class="stat-box">
-            <h2 class="counter" data-target="1000">0</h2>
-            <p>Companies Using Django</p>
         </div>
 
     </section>
 
-    <!-- INTERACTIVE SECTION -->
-    <section class="interactive">
-
-        <h2>Interactive Django Facts</h2>
-
-        <div class="fact-box" id="factBox">
-            Click the button to discover Django facts!
-        </div>
-
-        <button id="factBtn">Show Fact</button>
-
-    </section>
-
-    <!-- FOOTER -->
-    <footer>
-        <p>Built with ❤️ using Django</p>
-    </footer>
+    <!-- Floating Shapes -->
+    <div class="circle one"></div>
+    <div class="circle two"></div>
+    <div class="circle three"></div>
 
     <script src="{% static 'js/script.js' %}"></script>
 

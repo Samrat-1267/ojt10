@@ -1,73 +1,59 @@
-// EXPLORE BUTTON
+// Interactive Mouse Glow
+document.addEventListener("mousemove", (e) => {
 
-document.getElementById("exploreBtn").addEventListener("click", () => {
+    const circles = document.querySelectorAll(".circle");
 
-    window.scrollTo({
-        top: window.innerHeight,
-        behavior: "smooth"
+    circles.forEach((circle, index) => {
+
+        const speed = (index + 1) * 0.02;
+
+        const x = (window.innerWidth - e.pageX * speed) / 100;
+        const y = (window.innerHeight - e.pageY * speed) / 100;
+
+        circle.style.transform =
+        `translate(${x}px, ${y}px)`;
     });
-
 });
 
+// Profile Button
+const magicBtn = document.getElementById("magicBtn");
 
-// COUNTER ANIMATION
+if(magicBtn){
 
-const counters = document.querySelectorAll(".counter");
+    magicBtn.addEventListener("click", () => {
 
-counters.forEach(counter => {
+        const text = document.getElementById("powerText");
 
-    const updateCounter = () => {
+        text.innerHTML =
+        "⚡ Django Power Activated! Ready to build scalable AI-powered web apps.";
 
-        const target = +counter.getAttribute("data-target");
-        const current = +counter.innerText;
+        text.style.marginTop = "20px";
+        text.style.color = "#00ffe0";
+    });
+}
 
-        const increment = target / 100;
+// Typing Effect
+const heading = document.querySelector(".hero-content h1");
 
-        if(current < target){
+if(heading){
 
-            counter.innerText = Math.ceil(current + increment);
+    const text = heading.innerText;
 
-            setTimeout(updateCounter, 20);
+    heading.innerText = "";
 
-        }else{
+    let i = 0;
 
-            counter.innerText = target;
+    function type(){
+
+        if(i < text.length){
+
+            heading.innerHTML += text.charAt(i);
+
+            i++;
+
+            setTimeout(type, 50);
         }
-    };
+    }
 
-    updateCounter();
-});
-
-
-// DJANGO FACTS
-
-const facts = [
-
-    "Django was created to help developers build applications quickly.",
-
-    "Instagram uses Django for handling millions of users.",
-
-    "Django follows the DRY principle: Don't Repeat Yourself.",
-
-    "Django includes a powerful admin panel out of the box.",
-
-    "Django ORM lets you work with databases using Python."
-];
-
-const factBox = document.getElementById("factBox");
-
-document.getElementById("factBtn").addEventListener("click", () => {
-
-    const randomFact = facts[Math.floor(Math.random() * facts.length)];
-
-    factBox.style.transform = "scale(0.9)";
-
-    setTimeout(() => {
-
-        factBox.innerText = randomFact;
-
-        factBox.style.transform = "scale(1)";
-
-    }, 200);
-
-});
+    type();
+}

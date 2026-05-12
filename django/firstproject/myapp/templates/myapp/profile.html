@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Profile</title>
+
+    <link rel="stylesheet" href="{% static '/style.css' %}">
+</head>
+<body>
+
+<div class="bg-animation"></div>
+
+<nav class="navbar">
+    <div class="logo">DjangoVerse</div>
+
+    <ul class="nav-links">
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'about' %}">About</a></li>
+        <li><a href="{% url 'profile' %}">Profile</a></li>
+    </ul>
+</nav>
+
+<section class="profile-section">
+
+    <div class="profile-card">
+
+        <div class="profile-image">
+            👨‍💻
+        </div>
+
+        <h1 class="glow">Devlope Genius</h1>
+
+        <p class="role">
+            Python • Django • AI • Linux Developer
+        </p>
+
+        <div class="skills">
+            <span>Django</span>
+            <span>Python</span>
+            <span>Machine Learning</span>
+            <span>Linux</span>
+            <span>Frontend Design</span>
+        </div>
+
+        <button id="magicBtn">
+            Activate Django Power ⚡
+        </button>
+
+        <p id="powerText"></p>
+
+    </div>
+
+</section>
+
+<script src="{% static 'js/script.js' %}"></script>
+
+</body>
+</html>

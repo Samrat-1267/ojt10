@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Django</title>
+
+    <link rel="stylesheet" href="{% static 'CSS/style.css' %}">
+</head>
+<body>
+
+<div class="bg-animation"></div>
+
+<nav class="navbar">
+    <div class="logo">DjangoVerse</div>
+
+    <ul class="nav-links">
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'about' %}">About</a></li>
+        <li><a href="{% url 'profile' %}">Profile</a></li>
+    </ul>
+</nav>
+
+<section class="page-section">
+
+    <h1 class="glow">Why Django?</h1>
+
+    <div class="info-grid">
+
+        <div class="info-card">
+            <h2>🔥 Batteries Included</h2>
+            <p>
+                Authentication, admin panel, ORM, routing —
+                Django gives everything out of the box.
+            </p>
+        </div>
+
+        <div class="info-card">
+            <h2>🤖 AI Ready</h2>
+            <p>
+                Perfect for AI/ML integration with Python ecosystems.
+            </p>
+        </div>
+
+        <div class="info-card">
+            <h2>🌍 Community</h2>
+            <p>
+                One of the biggest Python communities with thousands of packages.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+<script src="{% static 'js/script.js' %}"></script>
+
+</body>
+</html>

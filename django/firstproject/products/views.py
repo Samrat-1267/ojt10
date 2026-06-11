@@ -2,8 +2,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q, Avg, Count
+from django.urls import reverse
 from .models import Category, Product, Review
 from .forms import ReviewForm
+import csv
+import os
 
 
 def product_list(request):
@@ -99,3 +102,33 @@ def add_review(request, slug):
             review.save()
             messages.success(request, 'Your review has been added.')
     return redirect('products:detail', slug=slug)
+
+
+def curation_view(request):
+    """Display all products from curation.csv for easy copying"""
+    csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'curation.csv')
+    products_list = []
+
+    if os.path.exists(csv_path):
+        with open(csv_path, 'r', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                row['get_absolute_url'] = reverse('products:detail', args=[row['slug']])
+                products_list.append(row)
+
+    context = {
+        'products': products_list,
+        'total_count': len(products_list),
+    }
+    return render(request, 'products/curation.html', context)
+
+
+@login_required
+def upload_curation_image(request, product_id):
+    """Handle image upload from curation page via click, drag-drop, or paste"""
+    if request.method == 'POST' and request.FILES.get('image'):
+        product = get_object_or_404(Product, id=product_id)
+        product.image = request.FILES['image']
+        product.save()
+        messages.success(request, f'Image uploaded for {product.name}')
+    return redirect('products:curation')

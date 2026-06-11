@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Product Curation - TechForge{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/curation.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<section class="section page-header">
+    <div class="container">
+        <h1>Product Curation Panel</h1>
+        <p>{{ total_count }} products loaded from curation.csv</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="curation-toolbar">
+            <div class="curation-search">
+                <input type="text" id="curationSearch" class="form-input" placeholder="Search products..." onkeyup="filterProducts()">
+            </div>
+            <div class="curation-stats">
+                <span class="stat-badge">{{ total_count }} Products</span>
+                <span class="stat-badge" id="visibleCount">{{ total_count }} Visible</span>
+            </div>
+        </div>
+
+        <div class="curation-table-wrapper">
+            <table class="curation-table" id="curationTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Type</th>
+                        <th>Specifications</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr class="product-row" data-name="{{ product.name|lower }}" data-category="{{ product.category|lower }}">
+                        <td class="col-id">{{ product.id }}</td>
+                        <td class="col-image">
+                            <div class="curation-image-wrapper">
+                                {% if product.image_path %}
+                                <img src="{{ product.image_path }}" alt="{{ product.name }}" class="curation-image">
+                                {% else %}
+                                <div class="curation-image-placeholder" id="placeholder-{{ product.id }}" ondragover="event.preventDefault()" ondrop="handleDrop(event, {{ product.id }})" onclick="document.getElementById('fileInput-{{ product.id }}').click()">
+                                    <span>+</span>
+                                    <small>Click/Paste</small>
+                                </div>
+                                {% endif %}
+                                <form class="image-upload-form" id="uploadForm-{{ product.id }}" method="post" enctype="multipart/form-data" action="{% url 'products:upload_curation_image' product.id %}">
+                                    {% csrf_token %}
+                                    <input type="file" id="fileInput-{{ product.id }}" name="image" accept="image/*" style="display:none" onchange="uploadImage(this, {{ product.id }})">
+                                </form>
+                                <div class="paste-indicator" id="pasteIndicator-{{ product.id }}">Paste Image (Ctrl+V)</div>
+                            </div>
+                        </td>
+                        <td class="col-name">
+                            <strong>{{ product.name }}</strong>
+                            <button class="btn-copy" onclick="copyText('{{ product.name|escapejs }}')" title="Copy name">&#128203;</button>
+                        </td>
+                        <td class="col-category">{{ product.category }}</td>
+                        <td class="col-price">
+                            {% if product.compare_price %}<span class="price-old">${{ product.compare_price }}</span><br>{% endif %}
+                            <strong>${{ product.price }}</strong>
+                            <button class="btn-copy" onclick="copyText('{{ product.price }}')" title="Copy price">&#128203;</button>
+                        </td>
+                        <td class="col-stock">
+                            <span class="stock-{{ product.in_stock|lower }}">{{ product.stock }}</span>
+                        </td>
+                        <td class="col-type">{{ product.component_type }}</td>
+                        <td class="col-specs">
+                            <div class="specs-preview">{{ product.specifications|truncatechars:60 }}</div>
+                            <button class="btn-copy" onclick="copyText(`{{ product.specifications|escapejs }}`)" title="Copy specs">&#128203;</button>
+                        </td>
+                        <td class="col-actions">
+                            <button class="btn btn-sm btn-outline" onclick="copyRow(this)">Copy Row</button>
+                            <a href="{{ product.get_absolute_url }}" class="btn btn-sm btn-primary" target="_blank">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<div id="toast" class="toast"></div>
+
+<style>
+.curation-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.curation-search { flex: 1; min-width: 250px; }
+.curation-stats { display: flex; gap: 12px; }
+.stat-badge {
+    padding: 6px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+.curation-table-wrapper {
+    overflow-x: auto;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+.curation-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+.curation-table th {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 2px solid var(--border-color);
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    background: var(--bg-card);
+    z-index: 1;
+}
+.curation-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+.curation-table tr:hover { background: var(--bg-hover); }
+.col-id { width: 40px; color: var(--text-muted); font-size: 0.8rem; }
+.col-image { width: 100px; text-align: center; }
+.curation-image-wrapper { position: relative; }
+.curation-image { width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border-color); }
+.curation-image-placeholder {
+    width: 80px; height: 80px;
+    background: var(--bg-secondary);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-sm);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-muted);
+    font-size: 1.5rem; transition: var(--transition);
+}
+.curation-image-placeholder:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+.curation-image-placeholder small { font-size: 0.65rem; margin-top: 4px; }
+.paste-indicator {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(108,92,231,0.9);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    pointer-events: none;
+}
+.curation-image-wrapper:focus-within .paste-indicator { display: flex; }
+.col-name strong { display: block; margin-bottom: 4px; }
+.btn-copy {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 2px 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: var(--transition);
+}
+.btn-copy:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+.col-price { white-space: nowrap; }
+.price-old { color: var(--text-muted); text-decoration: line-through; font-size: 0.8rem; }
+.stock-True { color: var(--accent-green); }
+.stock-False { color: var(--accent-red); }
+.col-actions { white-space: nowrap; }
+.col-actions .btn { margin-bottom: 4px; }
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-card);
+    border: 1px solid var(--accent-primary);
+    border-radius: var(--radius-md);
+    padding: 12px 24px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 999;
+}
+.toast.show { opacity: 1; }
+@media (max-width: 992px) {
+    .curation-table { font-size: 0.8rem; }
+    .curation-table td, .curation-table th { padding: 8px 10px; }
+    .col-specs { display: none; }
+}
+</style>
+
+<script>
+function filterProducts() {
+    const search = document.getElementById('curationSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('.product-row');
+    let visible = 0;
+    rows.forEach(row => {
+        const name = row.dataset.name;
+        const cat = row.dataset.category;
+        if (name.includes(search) || cat.includes(search)) {
+            row.style.display = '';
+            visible++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    document.getElementById('visibleCount').textContent = visible + ' Visible';
+}
+
+function copyRow(btn) {
+    const row = btn.closest('tr');
+    const cells = row.querySelectorAll('td');
+    const data = [];
+    cells.forEach(cell => {
+        const text = cell.textContent.trim().replace(/\s+/g, ' ').replace(/Copy RowCopy RowView/g, '').trim();
+        if (text) data.push(text);
+    });
+    copyText(data.join(' | '));
+}
+
+function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Copied to clipboard!');
+    }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        showToast('Copied to clipboard!');
+    });
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function uploadImage(input, id) {
+    if (input.files && input.files[0]) {
+        const form = document.getElementById('uploadForm-' + id);
+        form.submit();
+    }
+}
+
+function handleDrop(event, id) {
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+        const input = document.getElementById('fileInput-' + id);
+        input.files = files;
+        uploadImage(input, id);
+    }
+}
+
+document.addEventListener('paste', function(e) {
+    const active = document.activeElement;
+    if (active && active.closest('.curation-image-wrapper')) {
+        const items = e.clipboardData.items;
+        for (let item of items) {
+            if (item.type.startsWith('image/')) {
+                const file = item.getAsFile();
+                const wrapper = active.closest('.curation-image-wrapper');
+                const form = wrapper.querySelector('.image-upload-form');
+                const input = wrapper.querySelector('input[type="file"]');
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                input.files = dt.files;
+                form.submit();
+                e.preventDefault();
+                return;
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -8,6 +8,11 @@ from .models import Category, Product, Review
 from .forms import ReviewForm
 import csv
 import os
+import requests
+import io
+import re
+from urllib.parse import quote
+from django.core.files.base import ContentFile
 
 
 def product_list(request):
@@ -147,3 +152,62 @@ def curation_image_json(request, product_id):
     if product.image:
         return JsonResponse({'image_url': product.image.url})
     return JsonResponse({'image_url': None})
+
+
+@login_required
+def auto_fetch_image(request, product_id):
+    """Auto-fetch product image from Google Images and save to product"""
+    product = get_object_or_404(Product, id=product_id)
+    query = f"{product.name} product"
+
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+
+        # Try DuckDuckGo image search first
+        ddg_url = f"https://duckduckgo.com/?q={quote(query)}&iax=images&ia=images"
+        resp = requests.get(ddg_url, headers=headers, timeout=10)
+
+        if resp.status_code == 200:
+            # Extract vqd token
+            vqd_match = re.search(r'vqd=([\w-]+)&', resp.text)
+            if vqd_match:
+                vqd = vqd_match.group(1)
+                api_url = f"https://duckduckgo.com/i.js?q={quote(query)}&vqd={vqd}&o=json"
+                api_resp = requests.get(api_url, headers=headers, timeout=10)
+                if api_resp.status_code == 200:
+                    data = api_resp.json()
+                    if data.get('results'):
+                        img_url = data['results'][0]['image']
+                        # Download the image
+                        img_resp = requests.get(img_url, headers=headers, timeout=15)
+                        if img_resp.status_code == 200:
+                            ext = img_url.split('.')[-1].split('?')[0][:4]
+                            if ext.lower() not in ['jpg', 'jpeg', 'png', 'gif', 'webp']:
+                                ext = 'jpg'
+                            filename = f"{product.slug}.{ext}"
+                            product.image.save(filename, ContentFile(img_resp.content), save=True)
+                            return JsonResponse({'success': True, 'image_url': product.image.url})
+
+        # Fallback: try Google image search using a different approach
+        google_url = f"https://www.google.com/search?q={quote(query)}&tbm=isch"
+        g_resp = requests.get(google_url, headers=headers, timeout=10)
+        if g_resp.status_code == 200:
+            # Extract image URLs from the page
+            img_matches = re.findall(r'\["(https?://[^"]+\.(?:jpg|jpeg|png|gif|webp)[^"]*)"', g_resp.text)
+            if img_matches:
+                img_url = img_matches[0].replace('\\u003d', '=').replace('\\u0026', '&').replace('\\/', '/')
+                img_resp = requests.get(img_url, headers=headers, timeout=15)
+                if img_resp.status_code == 200:
+                    ext = img_url.split('.')[-1].split('?')[0][:4]
+                    if ext.lower() not in ['jpg', 'jpeg', 'png', 'gif', 'webp']:
+                        ext = 'jpg'
+                    filename = f"{product.slug}.{ext}"
+                    product.image.save(filename, ContentFile(img_resp.content), save=True)
+                    return JsonResponse({'success': True, 'image_url': product.image.url})
+
+        return JsonResponse({'success': False, 'error': 'No image found'}, status=404)
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)

@@ -9,7 +9,7 @@
         <div class="curation-header-flex">
             <div>
                 <h1>Product Curation</h1>
-                <p>Click a paste zone then <kbd>Ctrl+V</kbd> to paste image for each product</p>
+                <p>Click a zone or <kbd>Ctrl+V</kbd> to paste an image for each product. Images are saved to the database.</p>
             </div>
             <div class="curation-search">
                 <input type="text" id="curationSearch" class="form-input" placeholder="Search products..." onkeyup="filterProducts()">
@@ -18,7 +18,7 @@
         <div class="curation-stats" style="margin-top:12px;">
             <span class="stat-badge">{{ total_count }} Products</span>
             <span class="stat-badge" id="visibleCount">{{ total_count }} Visible</span>
-            <span class="stat-badge" id="hasImageCount">0 With Images</span>
+            <span class="stat-badge" id="hasImageCount">{{ products_with_images_count }} With Images</span>
         </div>
     </div>
 </section>
@@ -26,34 +26,44 @@
 <section class="section">
     <div class="container">
         <div class="curation-grid" id="curationGrid">
-            {% for product in products %}
-            <div class="curation-card" data-name="{{ product.name|lower }}" data-category="{{ product.category|lower }}" data-id="{{ product.id }}">
+            {% for p in products %}
+            {% with has_img=p.has_image %}
+            <div class="curation-card" data-name="{{ p.name|lower }}" data-category="{{ p.category|lower }}" data-id="{{ p.id }}">
                 <div class="curation-card-number">{{ forloop.counter }}</div>
-                <div class="curation-paste-zone {% if product.has_image == 'True' %}has-image{% endif %}" id="pasteZone-{{ product.id }}" tabindex="0"
-                    onclick="document.getElementById('fileInput-{{ product.id }}').click()"
-                    ondragover="event.preventDefault()"
-                    ondrop="handleDrop(event, {{ product.id }})">
-                    <div class="paste-zone-inner" id="pastePreview-{{ product.id }}">
-                        <div class="paste-icon">&#128247;</div>
-                        <div class="paste-text">Click or <kbd>Ctrl+V</kbd> to paste image</div>
-                    </div>
-                    <form class="image-upload-form" id="uploadForm-{{ product.id }}" method="post" enctype="multipart/form-data" action="{% url 'products:upload_curation_image' product.id %}">
-                        {% csrf_token %}
-                        <input type="file" id="fileInput-{{ product.id }}" name="image" accept="image/*" style="display:none" onchange="uploadImage(this, {{ product.id }})">
-                    </form>
-                    <div class="upload-progress" id="uploadProgress-{{ product.id }}">Uploading...</div>
-                </div>
+
+                <form class="curation-paste-form" method="post" enctype="multipart/form-data" action="{% url 'products:upload_curation_image' p.id %}">
+                    {% csrf_token %}
+                    <label class="curation-paste-zone {% if has_img %}has-image{% endif %}" id="zone-{{ p.id }}" tabindex="0"
+                        ondragover="event.preventDefault()"
+                        ondrop="handleDrop(event, {{ p.id }})">
+                        {% if has_img %}
+                        <img src="{{ p.image_url }}" class="paste-preview-img" alt="">
+                        {% else %}
+                        <div class="paste-zone-inner" id="inner-{{ p.id }}">
+                            <div class="paste-icon">&#128247;</div>
+                            <div class="paste-text">Click or <kbd>Ctrl+V</kbd> to paste</div>
+                        </div>
+                        {% endif %}
+                        <input type="file" name="image" accept="image/*" class="paste-file-input" id="file-{{ p.id }}" onchange="this.form.submit()">
+                        <div class="paste-overlay" id="overlay-{{ p.id }}">Uploading...</div>
+                    </label>
+                </form>
+
                 <div class="curation-card-info">
-                    <div class="curation-card-name">{{ product.name }}</div>
+                    <div class="curation-card-name">{{ p.name }}</div>
                     <div class="curation-card-meta">
-                        <span class="meta-price">${{ product.price }}</span>
+                        <span class="meta-price">${{ p.price }}</span>
                         <span class="meta-divider">|</span>
-                        <span class="meta-category">{{ product.category }}</span>
+                        <span class="meta-category">{{ p.category }}</span>
                         <span class="meta-divider">|</span>
-                        <span class="meta-stock">{{ product.stock }} in stock</span>
+                        <span class="meta-stock">Stock: {{ p.stock }}</span>
                     </div>
+                    <button class="btn-auto-fetch" onclick="autoFetchImage({{ p.id }}, this)" title="Auto-fetch image from Google">
+                        &#128269; Auto Fetch
+                    </button>
                 </div>
             </div>
+            {% endwith %}
             {% endfor %}
         </div>
         <div id="noResults" class="empty-state" style="display:none;">
@@ -62,8 +72,6 @@
         </div>
     </div>
 </section>
-
-<div id="toast" class="toast"></div>
 
 <style>
 .curation-header-flex {
@@ -112,6 +120,7 @@
 .curation-card-number {
     position: absolute;
     top: 8px; right: 8px;
+    z-index: 3;
     width: 26px; height: 26px;
     display: flex;
     align-items: center;
@@ -122,11 +131,13 @@
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-muted);
-    z-index: 2;
 }
+
+.curation-paste-form { margin: 0; }
 
 .curation-paste-zone {
     position: relative;
+    display: block;
     width: 100%;
     aspect-ratio: 1;
     background: var(--bg-secondary);
@@ -135,14 +146,8 @@
     transition: var(--transition);
     overflow: hidden;
 }
-.curation-paste-zone:focus {
-    border: 2px solid var(--accent-primary);
-    box-shadow: inset 0 0 0 1px var(--accent-primary);
-}
-.curation-paste-zone:hover {
-    background: var(--bg-hover);
-}
-.curation-paste-zone.has-image .paste-zone-inner { display: none; }
+.curation-paste-zone:focus { box-shadow: inset 0 0 0 3px var(--accent-primary); }
+.curation-paste-zone:hover { background: var(--bg-hover); }
 
 .paste-zone-inner {
     position: absolute;
@@ -153,11 +158,18 @@
     justify-content: center;
     gap: 8px;
     color: var(--text-muted);
+    pointer-events: none;
 }
 .paste-icon { font-size: 3rem; opacity: 0.4; }
-.paste-text { font-size: 0.8rem; }
-.paste-text kbd { background: var(--bg-card); }
-.curation-paste-zone:focus .paste-zone-inner { border-color: transparent; }
+.paste-text { font-size: 0.85rem; pointer-events: none; }
+
+.paste-file-input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
 
 .paste-preview-img {
     position: absolute;
@@ -165,9 +177,10 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    z-index: 1;
 }
 
-.upload-progress {
+.paste-overlay {
     display: none;
     position: absolute;
     inset: 0;
@@ -177,9 +190,9 @@
     justify-content: center;
     font-size: 0.9rem;
     font-weight: 500;
-    z-index: 3;
+    z-index: 4;
 }
-.upload-progress.active { display: flex; }
+.paste-overlay.active { display: flex; }
 
 .curation-card-info {
     padding: 14px 16px;
@@ -200,30 +213,41 @@
     gap: 6px;
     font-size: 0.8rem;
     flex-wrap: wrap;
+    margin-bottom: 10px;
 }
 .meta-price { color: var(--accent-secondary); font-weight: 600; }
 .meta-divider { color: var(--text-muted); opacity: 0.3; }
 .meta-category { color: var(--text-secondary); }
 .meta-stock { color: var(--text-muted); }
-
-.toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg-card);
-    border: 1px solid var(--accent-primary);
-    border-radius: var(--radius-md);
-    padding: 12px 24px;
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    box-shadow: var(--shadow-lg);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 999;
+.btn-auto-fetch {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.btn-auto-fetch:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    background: rgba(108,92,231,0.1);
+}
+.btn-auto-fetch.fetching {
+    opacity: 0.6;
     pointer-events: none;
 }
-.toast.show { opacity: 1; }
+.btn-auto-fetch.success {
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+}
+.btn-auto-fetch.error {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}
 
 @media (max-width: 768px) {
     .curation-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
@@ -233,6 +257,51 @@
 </style>
 
 <script>
+let lastFocusedZone = null;
+
+document.querySelectorAll('.curation-paste-zone').forEach(z => {
+    z.addEventListener('focus', function() {
+        lastFocusedZone = this.id.replace('zone-', '');
+    });
+    z.addEventListener('click', function(e) {
+        const input = this.querySelector('.paste-file-input');
+        if (input) input.click();
+    });
+});
+
+document.addEventListener('paste', function(e) {
+    if (!lastFocusedZone) return;
+    const items = e.clipboardData.items;
+    for (let item of items) {
+        if (item.type.startsWith('image/')) {
+            const file = item.getAsFile();
+            const input = document.getElementById('file-' + lastFocusedZone);
+            if (input) {
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                input.files = dt.files;
+                document.getElementById('overlay-' + lastFocusedZone).classList.add('active');
+                input.form.submit();
+                e.preventDefault();
+                return;
+            }
+        }
+    }
+});
+
+function handleDrop(event, id) {
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+        const input = document.getElementById('file-' + id);
+        if (input) {
+            input.files = files;
+            document.getElementById('overlay-' + id).classList.add('active');
+            input.form.submit();
+        }
+    }
+}
+
 function filterProducts() {
     const q = document.getElementById('curationSearch').value.toLowerCase();
     const cards = document.querySelectorAll('.curation-card');
@@ -251,117 +320,51 @@ function filterProducts() {
     document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
 }
 
-function showToast(msg, type) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast show' + (type ? ' toast-' + type : '');
-    clearTimeout(t._timer);
-    t._timer = setTimeout(() => t.classList.remove('show'), 2500);
-}
+function autoFetchImage(id, btn) {
+    btn.textContent = 'Fetching...';
+    btn.className = 'btn-auto-fetch fetching';
 
-function uploadImage(input, id) {
-    if (!input.files || !input.files[0]) return;
-    const progress = document.getElementById('uploadProgress-' + id);
-    progress.classList.add('active');
-    const form = document.getElementById('uploadForm-' + id);
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', form.action, true);
-    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    xhr.onload = function() {
-        progress.classList.remove('active');
-        if (xhr.status === 200) {
-            showToast('Image uploaded! Refresh to see it.', 'success');
-            const zone = document.getElementById('pasteZone-' + id);
-            const reader = new FileReader();
-            reader.onload = function(e) {
+    fetch('/products/auto-fetch-image/' + id + '/')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                btn.textContent = '&#10003; Fetched!';
+                btn.className = 'btn-auto-fetch success';
+                const zone = document.getElementById('zone-' + id);
                 const inner = zone.querySelector('.paste-zone-inner');
                 if (inner) inner.remove();
+                const existingImg = zone.querySelector('.paste-preview-img');
+                if (existingImg) existingImg.remove();
                 const img = document.createElement('img');
-                img.src = e.target.result;
+                img.src = data.image_url;
                 img.className = 'paste-preview-img';
-                img.alt = 'Uploaded image';
+                img.alt = '';
                 zone.appendChild(img);
                 zone.classList.add('has-image');
-            };
-            reader.readAsDataURL(input.files[0]);
-            updateImageCount();
-        } else {
-            showToast('Upload failed.', 'error');
-        }
-    };
-    xhr.onerror = function() {
-        progress.classList.remove('active');
-        showToast('Network error.', 'error');
-    };
-    xhr.send(new FormData(form));
+                updateImageCount();
+            } else {
+                btn.textContent = '&#10007; Not found';
+                btn.className = 'btn-auto-fetch error';
+                setTimeout(() => {
+                    btn.textContent = '&#128269; Auto Fetch';
+                    btn.className = 'btn-auto-fetch';
+                }, 3000);
+            }
+        })
+        .catch(() => {
+            btn.textContent = '&#10007; Error';
+            btn.className = 'btn-auto-fetch error';
+            setTimeout(() => {
+                btn.textContent = '&#128269; Auto Fetch';
+                btn.className = 'btn-auto-fetch';
+            }, 3000);
+        });
 }
 
 function updateImageCount() {
     const count = document.querySelectorAll('.curation-paste-zone.has-image').length;
-    document.getElementById('hasImageCount').textContent = count + ' With Images';
+    const el = document.getElementById('hasImageCount');
+    if (el) el.textContent = count + ' With Images';
 }
-
-function handleDrop(event, id) {
-    event.preventDefault();
-    const files = event.dataTransfer.files;
-    if (files.length > 0) {
-        const input = document.getElementById('fileInput-' + id);
-        input.files = files;
-        uploadImage(input, id);
-    }
-}
-
-document.addEventListener('paste', function(e) {
-    const active = document.activeElement;
-    if (!active || !active.classList.contains('curation-paste-zone')) return;
-    const id = active.id.replace('pasteZone-', '');
-    const items = e.clipboardData.items;
-    for (let item of items) {
-        if (item.type.startsWith('image/')) {
-            const file = item.getAsFile();
-            const input = document.getElementById('fileInput-' + id);
-            const dt = new DataTransfer();
-            dt.items.add(file);
-            input.files = dt.files;
-            uploadImage(input, id);
-            e.preventDefault();
-            return;
-        }
-    }
-});
-
-document.querySelectorAll('.curation-paste-zone').forEach(z => {
-    const id = z.id.replace('pasteZone-', '');
-    z.addEventListener('click', function(e) {
-        if (e.target.tagName === 'IMG') return;
-        document.getElementById('fileInput-' + id).click();
-    });
-});
-
-(async function loadExistingImages() {
-    const cards = document.querySelectorAll('.curation-card');
-    for (const card of cards) {
-        const id = card.dataset.id;
-        const zone = document.getElementById('pasteZone-' + id);
-        if (zone && zone.classList.contains('has-image')) {
-            try {
-                const resp = await fetch('/products/curation-image/' + id + '/');
-                if (resp.ok) {
-                    const data = await resp.json();
-                    if (data.image_url) {
-                        const inner = zone.querySelector('.paste-zone-inner');
-                        if (inner) inner.remove();
-                        const img = document.createElement('img');
-                        img.src = data.image_url;
-                        img.className = 'paste-preview-img';
-                        img.alt = '';
-                        zone.appendChild(img);
-                    }
-                }
-            } catch(e) {}
-        }
-    }
-    updateImageCount();
-})();
 </script>
 {% endblock %}

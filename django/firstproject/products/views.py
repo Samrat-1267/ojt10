@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q, Avg, Count
 from django.urls import reverse
+from django.http import JsonResponse
 from .models import Category, Product, Review
 from .forms import ReviewForm
 import csv
@@ -108,12 +109,14 @@ def curation_view(request):
     """Display all products from curation.csv for easy copying"""
     csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'curation.csv')
     products_list = []
+    products_with_images = set(Product.objects.filter(image__isnull=False).values_list('id', flat=True))
 
     if os.path.exists(csv_path):
         with open(csv_path, 'r', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 row['get_absolute_url'] = reverse('products:detail', args=[row['slug']])
+                row['has_image'] = str(int(row['id']) in products_with_images)
                 products_list.append(row)
 
     context = {
@@ -130,5 +133,17 @@ def upload_curation_image(request, product_id):
         product = get_object_or_404(Product, id=product_id)
         product.image = request.FILES['image']
         product.save()
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True, 'image_url': product.image.url})
         messages.success(request, f'Image uploaded for {product.name}')
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'success': False}, status=400)
     return redirect('products:curation')
+
+
+def curation_image_json(request, product_id):
+    """Return image URL for a product (used by curation page to load existing images)"""
+    product = get_object_or_404(Product, id=product_id)
+    if product.image:
+        return JsonResponse({'image_url': product.image.url})
+    return JsonResponse({'image_url': None})

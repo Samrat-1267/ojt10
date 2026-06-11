@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - TechForge{% endblock %}
+
+{% block content %}
+<section class="section page-header">
+    <div class="container">
+        <div class="breadcrumbs">
+            <a href="{% url 'home' %}">Home</a> / <a href="{% url 'products:list' %}">Products</a> / <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a> / <span>{{ product.name }}</span>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="product-detail">
+            <div class="product-gallery">
+                <div class="product-main-image">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" id="mainImage">
+                    {% else %}
+                    <div class="product-placeholder large">
+                        <span>{{ product.name|first }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if product.images.all %}
+                <div class="product-thumbnails">
+                    {% for image in product.images.all %}
+                    <div class="thumbnail" onclick="document.getElementById('mainImage').src='{{ image.image.url }}'">
+                        <img src="{{ image.image.url }}" alt="{{ image.alt_text }}">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="product-info-detail">
+                <p class="product-category">{{ product.category.name }}</p>
+                <h1 class="product-title">{{ product.name }}</h1>
+
+                <div class="product-rating-detail">
+                    {% if product.review_count > 0 %}
+                    <span class="stars">{% for i in "12345" %}{% if forloop.counter <= product.rating_avg %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}</span>
+                    <span class="review-count">{{ product.rating_avg|floatformat:1 }} ({{ product.review_count }} reviews)</span>
+                    {% else %}
+                    <span>No reviews yet</span>
+                    {% endif %}
+                </div>
+
+                <div class="product-price-detail">
+                    {% if product.compare_price %}
+                    <span class="price-old">${{ product.compare_price }}</span>
+                    {% endif %}
+                    <span class="price-current">${{ product.price }}</span>
+                </div>
+
+                <div class="product-stock">
+                    {% if product.in_stock %}
+                    <span class="stock-badge in-stock">In Stock ({{ product.stock }} available)</span>
+                    {% else %}
+                    <span class="stock-badge out-of-stock">Out of Stock</span>
+                    {% endif %}
+                </div>
+
+                <div class="product-description">
+                    <p>{{ product.description }}</p>
+                </div>
+
+                <form class="add-to-cart-form" data-product-id="{{ product.id }}">
+                    {% csrf_token %}
+                    <div class="quantity-selector">
+                        <button type="button" class="qty-btn" onclick="this.parentNode.querySelector('input').stepDown()">-</button>
+                        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="qty-input">
+                        <button type="button" class="qty-btn" onclick="this.parentNode.querySelector('input').stepUp()">+</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg add-to-cart-btn" {% if not product.in_stock %}disabled{% endif %}>
+                        {% if product.in_stock %}Add to Cart{% else %}Out of Stock{% endif %}
+                    </button>
+                </form>
+
+                <div class="product-meta">
+                    <p><strong>Category:</strong> {{ product.category.name }}</p>
+                    {% if product.component_type %}
+                    <p><strong>Component Type:</strong> {{ product.get_component_type_display }}</p>
+                    {% endif %}
+                    <p><strong>SKU:</strong> {{ product.id }}</p>
+                </div>
+            </div>
+        </div>
+
+        {% if product.specifications %}
+        <div class="product-specifications">
+            <h2>Specifications</h2>
+            <div class="specs-table">
+                {% for key, value in product.specifications.items %}
+                <div class="spec-row">
+                    <span class="spec-key">{{ key }}</span>
+                    <span class="spec-value">{{ value }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="product-reviews">
+            <h2>Customer Reviews</h2>
+            {% if user.is_authenticated %}
+            <div class="add-review">
+                <h3>Write a Review</h3>
+                <form method="post" action="{% url 'products:add_review' product.slug %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="id_rating">Rating</label>
+                        {{ review_form.rating }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_comment">Your Review</label>
+                        {{ review_form.comment }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+            </div>
+            {% else %}
+            <p><a href="{% url 'accounts:login' %}">Login</a> to write a review.</p>
+            {% endif %}
+
+            <div class="reviews-list">
+                {% for review in product.reviews.all %}
+                <div class="review-item">
+                    <div class="review-header">
+                        <div class="review-avatar">{{ review.user.username|first|upper }}</div>
+                        <div>
+                            <p class="review-name">{{ review.user.username }}</p>
+                            <div class="review-stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}</div>
+                        </div>
+                        <span class="review-date">{{ review.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    <p class="review-text">{{ review.comment }}</p>
+                </div>
+                {% empty %}
+                <p class="no-reviews">No reviews yet. Be the first!</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if related_products %}
+        <div class="related-products">
+            <h2>Related Products</h2>
+            <div class="products-grid">
+                {% for product in related_products %}
+                <div class="product-card">
+                    <div class="product-image">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                        <div class="product-placeholder"><span>{{ product.name|first }}</span></div>
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <div class="product-price">
+                            <span class="price-current">${{ product.price }}</span>
+                        </div>
+                        <a href="{{ product.get_absolute_url }}" class="btn btn-outline btn-sm">View</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.add-to-cart-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const productId = this.dataset.productId;
+        const quantity = this.querySelector('.qty-input').value;
+        fetch("{% url 'cart:add' 0 %}".replace('0', productId), {
+            method: 'POST',
+            headers: {'X-CSRFToken': '{{ csrf_token }}', 'X-Requested-With': 'XMLHttpRequest'},
+            body: new URLSearchParams({quantity: quantity})
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('cart-count').textContent = data.item_count;
+                alert('Added to cart!');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Products - TechForge{% endblock %}
+
+{% block content %}
+<section class="section page-header">
+    <div class="container">
+        <h1>Products</h1>
+        <div class="breadcrumbs">
+            <a href="{% url 'home' %}">Home</a> / <span>Products</span>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="catalog-layout">
+            <aside class="catalog-sidebar">
+                <div class="filter-section">
+                    <h3>Categories</h3>
+                    <ul class="filter-list">
+                        <li><a href="{% url 'products:list' %}" class="filter-link {% if not selected_category %}active{% endif %}">All Products</a></li>
+                        {% for category in categories %}
+                        <li><a href="{% url 'products:list' %}?category={{ category.slug }}" class="filter-link {% if selected_category == category.slug %}active{% endif %}">{{ category.name }}</a></li>
+                        {% if category.children.all %}
+                        <ul class="filter-sublist">
+                            {% for child in category.children.all %}
+                            <li><a href="{% url 'products:list' %}?category={{ child.slug }}" class="filter-link {% if selected_category == child.slug %}active{% endif %}">{{ child.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </aside>
+
+            <div class="catalog-main">
+                <div class="catalog-toolbar">
+                    <p class="result-count">{{ products|length }} product{% if products|length != 1 %}s{% endif %}{% if query %} found for "{{ query }}"{% endif %}</p>
+                    <div class="sort-controls">
+                        <label for="sort">Sort:</label>
+                        <select id="sort" class="form-input" onchange="window.location.href=this.value">
+                            <option value="?{% if selected_category %}category={{ selected_category }}&{% endif %}sort=-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Newest</option>
+                            <option value="?{% if selected_category %}category={{ selected_category }}&{% endif %}sort=price" {% if current_sort == 'price' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="?{% if selected_category %}category={{ selected_category }}&{% endif %}sort=-price" {% if current_sort == '-price' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="?{% if selected_category %}category={{ selected_category }}&{% endif %}sort=name" {% if current_sort == 'name' %}selected{% endif %}>Name: A-Z</option>
+                            <option value="?{% if selected_category %}category={{ selected_category }}&{% endif %}sort=-name" {% if current_sort == '-name' %}selected{% endif %}>Name: Z-A</option>
+                            <option value="?{% if selected_category %}category={{ selected_category }}&{% endif %}sort=rating" {% if current_sort == 'rating' %}selected{% endif %}>Rating</option>
+                        </select>
+                    </div>
+                </div>
+
+                {% if products %}
+                <div class="products-grid">
+                    {% for product in products %}
+                    <div class="product-card">
+                        <div class="product-image">
+                            {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                            <div class="product-placeholder">
+                                <span>{{ product.name|first }}</span>
+                            </div>
+                            {% endif %}
+                            {% if product.compare_price %}
+                            <span class="product-badge sale">Sale</span>
+                            {% endif %}
+                            {% if not product.in_stock %}
+                            <span class="product-badge out-of-stock">Out of Stock</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-info">
+                            <p class="product-category">{{ product.category.name }}</p>
+                            <h3 class="product-name">{{ product.name }}</h3>
+                            <div class="product-rating">
+                                {% if product.review_count > 0 %}
+                                <span class="stars">{% for i in "12345" %}{% if forloop.counter <= product.rating_avg %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}</span>
+                                <span class="review-count">({{ product.review_count }})</span>
+                                {% endif %}
+                            </div>
+                            <div class="product-price">
+                                {% if product.compare_price %}
+                                <span class="price-old">${{ product.compare_price }}</span>
+                                {% endif %}
+                                <span class="price-current">${{ product.price }}</span>
+                            </div>
+                            <div class="product-actions">
+                                <a href="{{ product.get_absolute_url }}" class="btn btn-outline btn-sm">Details</a>
+                                {% if product.in_stock %}
+                                <button class="btn btn-primary btn-sm add-to-cart" data-product-id="{{ product.id }}">Add to Cart</button>
+                                {% else %}
+                                <button class="btn btn-sm" disabled>Out of Stock</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">&#128270;</div>
+                    <h3>No products found</h3>
+                    <p>Try adjusting your search or filter criteria.</p>
+                    <a href="{% url 'products:list' %}" class="btn btn-primary">Clear Filters</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

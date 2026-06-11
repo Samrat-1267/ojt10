@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - TechForge{% endblock %}
+
+{% block content %}
+<section class="section page-header">
+    <div class="container">
+        <h1>Checkout</h1>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="checkout-layout">
+            <div class="checkout-form">
+                <div class="card">
+                    <h2>Shipping Information</h2>
+                    <form method="post" action="{% url 'orders:checkout' %}">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="{{ form.email.id_for_label }}">Email</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.phone.id_for_label }}">Phone</label>
+                                {{ form.phone }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.shipping_name.id_for_label }}">Full Name</label>
+                            {{ form.shipping_name }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.shipping_address.id_for_label }}">Address</label>
+                            {{ form.shipping_address }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.shipping_address2.id_for_label }}">Apartment/Suite (Optional)</label>
+                            {{ form.shipping_address2 }}
+                        </div>
+                        <div class="form-row three">
+                            <div class="form-group">
+                                <label for="{{ form.shipping_city.id_for_label }}">City</label>
+                                {{ form.shipping_city }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.shipping_state.id_for_label }}">State</label>
+                                {{ form.shipping_state }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.shipping_postal_code.id_for_label }}">ZIP</label>
+                                {{ form.shipping_postal_code }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.shipping_country.id_for_label }}">Country</label>
+                            {{ form.shipping_country }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.notes.id_for_label }}">Order Notes (Optional)</label>
+                            {{ form.notes }}
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg btn-block">Continue to Review</button>
+                    </form>
+                </div>
+            </div>
+            <div class="checkout-summary">
+                <div class="summary-card">
+                    <h2>Order Summary</h2>
+                    {% for item in cart.items.all %}
+                    <div class="summary-item">
+                        <span>{{ item.product.name }} x{{ item.quantity }}</span>
+                        <span>${{ item.total }}</span>
+                    </div>
+                    {% endfor %}
+                    <hr>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>${{ cart.subtotal }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span>{% if shipping_cost == 0 %}Free{% else %}${{ shipping_cost }}{% endif %}</span>
+                    </div>
+                    <hr>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>${{ cart.subtotal|add:shipping_cost }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

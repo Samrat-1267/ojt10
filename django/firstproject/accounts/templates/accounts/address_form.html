@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - TechForge{% endblock %}
+
+{% block content %}
+<section class="section page-header">
+    <div class="container">
+        <h1>{{ title }}</h1>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="account-layout">
+            <aside class="account-sidebar">
+                <nav class="account-nav">
+                    <a href="{% url 'accounts:profile' %}">My Profile</a>
+                    <a href="{% url 'accounts:edit_profile' %}">Edit Profile</a>
+                    <a href="{% url 'accounts:addresses' %}" class="active">Addresses</a>
+                    <a href="{% url 'accounts:order_history' %}">Order History</a>
+                    <a href="{% url 'accounts:saved_builds' %}">Saved Builds</a>
+                    <a href="{% url 'accounts:logout' %}">Logout</a>
+                </nav>
+            </aside>
+            <div class="account-main">
+                <div class="card">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="{{ form.full_name.id_for_label }}">Full Name</label>
+                                {{ form.full_name }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.phone.id_for_label }}">Phone</label>
+                                {{ form.phone }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.address_line1.id_for_label }}">Address Line 1</label>
+                            {{ form.address_line1 }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.address_line2.id_for_label }}">Address Line 2 (Optional)</label>
+                            {{ form.address_line2 }}
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="{{ form.city.id_for_label }}">City</label>
+                                {{ form.city }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.state.id_for_label }}">State</label>
+                                {{ form.state }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.postal_code.id_for_label }}">Postal Code</label>
+                                {{ form.postal_code }}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="{{ form.country.id_for_label }}">Country</label>
+                                {{ form.country }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.address_type.id_for_label }}">Address Type</label>
+                                {{ form.address_type }}
+                            </div>
+                        </div>
+                        <div class="form-group form-group-checkbox">
+                            {{ form.is_default }}
+                            <label for="{{ form.is_default.id_for_label }}">Set as default address</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Address</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

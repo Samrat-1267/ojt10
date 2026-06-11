@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - TechForge{% endblock %}
+
+{% block content %}
+<section class="section page-header">
+    <div class="container">
+        <h1>My Account</h1>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="account-layout">
+            <aside class="account-sidebar">
+                <div class="account-user">
+                    <div class="account-avatar">{{ user.username|first|upper }}</div>
+                    <h3>{{ user.username }}</h3>
+                    <p>{{ user.email }}</p>
+                </div>
+                <nav class="account-nav">
+                    <a href="{% url 'accounts:profile' %}" class="active">My Profile</a>
+                    <a href="{% url 'accounts:edit_profile' %}">Edit Profile</a>
+                    <a href="{% url 'accounts:addresses' %}">Addresses</a>
+                    <a href="{% url 'accounts:order_history' %}">Order History</a>
+                    <a href="{% url 'accounts:saved_builds' %}">Saved Builds</a>
+                    <a href="{% url 'accounts:logout' %}">Logout</a>
+                </nav>
+            </aside>
+            <div class="account-main">
+                <div class="card">
+                    <h2>Profile Overview</h2>
+                    <div class="profile-info">
+                        <div class="info-row">
+                            <span class="info-label">Username</span>
+                            <span class="info-value">{{ user.username }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email</span>
+                            <span class="info-value">{{ user.email }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Name</span>
+                            <span class="info-value">{{ user.get_full_name|default:"Not set" }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Phone</span>
+                            <span class="info-value">{{ user.profile.phone|default:"Not set" }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Member Since</span>
+                            <span class="info-value">{{ user.date_joined|date:"F d, Y" }}</span>
+                        </div>
+                    </div>
+                    <a href="{% url 'accounts:edit_profile' %}" class="btn btn-outline">Edit Profile</a>
+                </div>
+
+                <div class="account-stats">
+                    <div class="stat-card">
+                        <span class="stat-number">{{ user.orders.count }}</span>
+                        <span class="stat-label">Orders</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">{{ user.addresses.count }}</span>
+                        <span class="stat-label">Addresses</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">{{ user.saved_builds.count }}</span>
+                        <span class="stat-label">Saved Builds</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

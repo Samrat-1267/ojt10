@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Saved Builds - TechForge{% endblock %}
+
+{% block content %}
+<section class="section page-header">
+    <div class="container">
+        <h1>Saved Builds</h1>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="account-layout">
+            <aside class="account-sidebar">
+                <nav class="account-nav">
+                    <a href="{% url 'accounts:profile' %}">My Profile</a>
+                    <a href="{% url 'accounts:edit_profile' %}">Edit Profile</a>
+                    <a href="{% url 'accounts:addresses' %}">Addresses</a>
+                    <a href="{% url 'accounts:order_history' %}">Order History</a>
+                    <a href="{% url 'accounts:saved_builds' %}" class="active">Saved Builds</a>
+                    <a href="{% url 'accounts:logout' %}">Logout</a>
+                </nav>
+            </aside>
+            <div class="account-main">
+                {% if builds %}
+                <div class="builds-grid">
+                    {% for build in builds %}
+                    <div class="build-card">
+                        <h3>{{ build.name }}</h3>
+                        <div class="build-components">
+                            {% for type, component in build.components.items %}
+                            {% if component %}
+                            <div class="build-component">
+                                <span class="component-type">{{ type|title }}:</span>
+                                <span class="component-name">{{ component.name }}</span>
+                                <span class="component-price">${{ component.price }}</span>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="build-footer">
+                            <span class="build-total">Total: ${{ build.total_price }}</span>
+                            <div class="build-actions">
+                                <a href="{% url 'custom_pc_builder:builder' %}?load={{ build.id }}" class="btn btn-outline btn-sm">Load</a>
+                                <a href="{% url 'custom_pc_builder:delete' build.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this build?')">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <h3>No saved builds</h3>
+                    <p>Use the PC Builder to create and save your custom configurations.</p>
+                    <a href="{% url 'custom_pc_builder:builder' %}" class="btn btn-primary">Start Building</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

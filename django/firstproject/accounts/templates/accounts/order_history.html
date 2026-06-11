@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order History - TechForge{% endblock %}
+
+{% block content %}
+<section class="section page-header">
+    <div class="container">
+        <h1>Order History</h1>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="account-layout">
+            <aside class="account-sidebar">
+                <nav class="account-nav">
+                    <a href="{% url 'accounts:profile' %}">My Profile</a>
+                    <a href="{% url 'accounts:edit_profile' %}">Edit Profile</a>
+                    <a href="{% url 'accounts:addresses' %}">Addresses</a>
+                    <a href="{% url 'accounts:order_history' %}" class="active">Order History</a>
+                    <a href="{% url 'accounts:saved_builds' %}">Saved Builds</a>
+                    <a href="{% url 'accounts:logout' %}">Logout</a>
+                </nav>
+            </aside>
+            <div class="account-main">
+                {% if orders %}
+                <div class="orders-list">
+                    {% for order in orders %}
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div>
+                                <h3>Order #{{ order.id }}</h3>
+                                <p class="order-date">{{ order.created_at|date:"F d, Y" }}</p>
+                            </div>
+                            <div class="order-status {{ order.status }}">{{ order.get_status_display }}</div>
+                        </div>
+                        <div class="order-items">
+                            {% for item in order.items.all|slice:":3" %}
+                            <div class="order-item">
+                                <span>{{ item.product_name }} x{{ item.quantity }}</span>
+                                <span>${{ item.total }}</span>
+                            </div>
+                            {% endfor %}
+                            {% if order.items.count > 3 %}
+                            <p class="more-items">+{{ order.items.count|add:"-3" }} more items</p>
+                            {% endif %}
+                        </div>
+                        <div class="order-footer">
+                            <span class="order-total">Total: ${{ order.total }}</span>
+                            <a href="{% url 'orders:confirmation' order.id %}" class="btn btn-outline btn-sm">View Details</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <h3>No orders yet</h3>
+                    <p>Start shopping to see your order history here.</p>
+                    <a href="{% url 'products:list' %}" class="btn btn-primary">Start Shopping</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

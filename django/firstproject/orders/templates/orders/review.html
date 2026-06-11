@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Review Order - TechForge{% endblock %}
+
+{% block content %}
+<section class="section page-header">
+    <div class="container">
+        <h1>Review Your Order</h1>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="checkout-layout">
+            <div class="checkout-form">
+                <div class="card">
+                    <h2>Shipping To</h2>
+                    <div class="review-address">
+                        <p><strong>{{ checkout_data.shipping_name }}</strong></p>
+                        <p>{{ checkout_data.shipping_address }}</p>
+                        {% if checkout_data.shipping_address2 %}<p>{{ checkout_data.shipping_address2 }}</p>{% endif %}
+                        <p>{{ checkout_data.shipping_city }}, {{ checkout_data.shipping_state }} {{ checkout_data.shipping_postal_code }}</p>
+                        <p>{{ checkout_data.shipping_country }}</p>
+                        <p>{{ checkout_data.phone }}</p>
+                        <p>{{ checkout_data.email }}</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Order Items</h2>
+                    {% for item in cart.items.all %}
+                    <div class="review-item">
+                        <span>{{ item.product.name }} x{{ item.quantity }}</span>
+                        <span>${{ item.total }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <form method="post" action="{% url 'orders:review' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">Place Order - ${{ total }}</button>
+                </form>
+            </div>
+            <div class="checkout-summary">
+                <div class="summary-card">
+                    <h2>Summary</h2>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>${{ subtotal }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span>{% if shipping_cost == 0 %}Free{% else %}${{ shipping_cost }}{% endif %}</span>
+                    </div>
+                    <hr>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>${{ total }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

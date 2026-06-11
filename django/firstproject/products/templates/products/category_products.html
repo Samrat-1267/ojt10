@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} - TechForge{% endblock %}
+
+{% block content %}
+<section class="section page-header">
+    <div class="container">
+        <h1>{{ category.name }}</h1>
+        {% if category.description %}
+        <p>{{ category.description }}</p>
+        {% endif %}
+        <div class="breadcrumbs">
+            <a href="{% url 'home' %}">Home</a> / <a href="{% url 'products:list' %}">Products</a> / <span>{{ category.name }}</span>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        {% if child_categories %}
+        <div class="subcategories">
+            {% for child in child_categories %}
+            <a href="{% url 'products:category' child.slug %}" class="subcategory-card">
+                <h3>{{ child.name }}</h3>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="catalog-toolbar">
+            <p class="result-count">{{ products|length }} product{% if products|length != 1 %}s{% endif %}</p>
+            <div class="sort-controls">
+                <label for="sort">Sort:</label>
+                <select id="sort" class="form-input" onchange="window.location.href=this.value">
+                    <option value="?sort=-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Newest</option>
+                    <option value="?sort=price" {% if current_sort == 'price' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="?sort=-price" {% if current_sort == '-price' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="?sort=name" {% if current_sort == 'name' %}selected{% endif %}>Name: A-Z</option>
+                    <option value="?sort=-name" {% if current_sort == '-name' %}selected{% endif %}>Name: Z-A</option>
+                </select>
+            </div>
+        </div>
+
+        {% if products %}
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-image">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                    <div class="product-placeholder">
+                        <span>{{ product.name|first }}</span>
+                    </div>
+                    {% endif %}
+                    {% if product.compare_price %}
+                    <span class="product-badge sale">Sale</span>
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <p class="product-category">{{ product.category.name }}</p>
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <div class="product-rating">
+                        {% if product.review_count > 0 %}
+                        <span class="stars">{% for i in "12345" %}{% if forloop.counter <= product.rating_avg %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}</span>
+                        <span class="review-count">({{ product.review_count }})</span>
+                        {% endif %}
+                    </div>
+                    <div class="product-price">
+                        {% if product.compare_price %}
+                        <span class="price-old">${{ product.compare_price }}</span>
+                        {% endif %}
+                        <span class="price-current">${{ product.price }}</span>
+                    </div>
+                    <div class="product-actions">
+                        <a href="{{ product.get_absolute_url }}" class="btn btn-outline btn-sm">Details</a>
+                        <button class="btn btn-primary btn-sm add-to-cart" data-product-id="{{ product.id }}">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">&#128270;</div>
+            <h3>No products in this category</h3>
+            <a href="{% url 'products:list' %}" class="btn btn-primary">Browse All Products</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

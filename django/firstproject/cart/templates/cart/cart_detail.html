@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart - TechForge{% endblock %}
+
+{% block content %}
+<section class="section page-header">
+    <div class="container">
+        <h1>Shopping Cart</h1>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        {% if cart.items.all %}
+        <div class="cart-layout">
+            <div class="cart-items">
+                {% for item in cart.items.all %}
+                <div class="cart-item">
+                    <div class="cart-item-image">
+                        {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                        {% else %}
+                        <div class="product-placeholder small"><span>{{ item.product.name|first }}</span></div>
+                        {% endif %}
+                    </div>
+                    <div class="cart-item-info">
+                        <h3>{{ item.product.name }}</h3>
+                        <p class="cart-item-price">${{ item.product.price }}</p>
+                    </div>
+                    <form method="post" action="{% url 'cart:update' item.id %}" class="cart-quantity-form">
+                        {% csrf_token %}
+                        <div class="quantity-selector">
+                            <button type="button" class="qty-btn" onclick="this.parentNode.querySelector('input').stepDown(); this.form.submit();">-</button>
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="qty-input" onchange="this.form.submit()">
+                            <button type="button" class="qty-btn" onclick="this.parentNode.querySelector('input').stepUp(); this.form.submit();">+</button>
+                        </div>
+                    </form>
+                    <div class="cart-item-total">
+                        <span>${{ item.total }}</span>
+                    </div>
+                    <a href="{% url 'cart:remove' item.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Remove this item?')">&times;</a>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="cart-summary">
+                <div class="summary-card">
+                    <h2>Order Summary</h2>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>${{ cart.subtotal }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span>{% if shipping == 0 %}Free{% else %}${{ shipping }}{% endif %}</span>
+                    </div>
+                    {% if shipping > 0 %}
+                    <p class="shipping-notice">Free shipping on orders over $100!</p>
+                    {% endif %}
+                    <hr>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>${{ cart.subtotal|add:shipping }}</span>
+                    </div>
+                    <a href="{% url 'orders:checkout' %}" class="btn btn-primary btn-block">Proceed to Checkout</a>
+                    <a href="{% url 'products:list' %}" class="btn btn-outline btn-block">Continue Shopping</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">&#128722;</div>
+            <h3>Your cart is empty</h3>
+            <p>Looks like you haven't added anything yet.</p>
+            <a href="{% url 'products:list' %}" class="btn btn-primary">Start Shopping</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

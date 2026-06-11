@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}PC Builder - TechForge{% endblock %}
+
+{% block content %}
+<section class="section page-header">
+    <div class="container">
+        <h1>Custom PC Builder</h1>
+        <p>Select your components and we'll check compatibility in real-time.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="builder-layout">
+            <div class="builder-components">
+                {% for ctype, ctype_label in component_types %}
+                <div class="builder-component-card" data-component-type="{{ ctype }}">
+                    <div class="builder-component-header">
+                        <h3>{{ ctype_label }}</h3>
+                        <button class="btn btn-outline btn-sm select-component" data-type="{{ ctype }}">Select</button>
+                    </div>
+                    <div class="builder-component-selected" id="selected-{{ ctype }}">
+                        {% if ctype in selected_components %}
+                        <div class="selected-component">
+                            <span class="selected-name">{{ selected_components|dictsort:ctype }}</span>
+                            <span class="selected-price">${{ selected_components|dictsort:ctype }}</span>
+                        </div>
+                        {% else %}
+                        <p class="no-selection">No component selected</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="builder-sidebar">
+                <div class="builder-summary">
+                    <h2>Build Summary</h2>
+                    <div id="build-summary-list">
+                        {% for ctype, ctype_label in component_types %}
+                        <div class="build-summary-item" id="summary-{{ ctype }}">
+                            <span class="summary-label">{{ ctype_label }}</span>
+                            {% if ctype in selected_components %}
+                            <span class="summary-value" id="price-{{ ctype }}">${{ selected_components|dictsort:ctype }}</span>
+                            {% else %}
+                            <span class="summary-value">-</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <hr>
+                    <div class="build-total">
+                        <span>Total</span>
+                        <span id="build-total-price">${{ total }}</span>
+                    </div>
+                    <div id="compatibility-status" class="compatibility-status compatible">
+                        &#10003; All components are compatible
+                    </div>
+                    <div class="builder-actions">
+                        <button class="btn btn-primary btn-block" id="add-build-to-cart">Add Build to Cart</button>
+                        {% if user.is_authenticated %}
+                        <button class="btn btn-outline btn-block" id="save-build">Save Build</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal" id="componentModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modal-title">Select Component</h2>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <div class="loading">Loading components...</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/pc_builder.js' %}"></script>
+<script>
+const componentTypes = {{ component_types|safe }};
+const csrfToken = '{{ csrf_token }}';
+const addToCartUrl = "{% url 'cart:add' 0 %}";
+const saveBuildUrl = "{% url 'custom_pc_builder:save' %}";
+</script>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - TechForge{% endblock %}
+
+{% block content %}
+<section class="section auth-section">
+    <div class="container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Welcome Back</h1>
+                <p>Login to your account</p>
+            </div>
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <div class="field-errors">
+                        {% for error in field.errors %}
+                        <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+                <p class="auth-alt">Don't have an account? <a href="{% url 'accounts:register' %}">Register</a></p>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

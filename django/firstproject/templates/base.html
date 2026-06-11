@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Premium PC components, gaming peripherals, and custom-built PCs. Shop the best tech hardware.">
+    <meta name="keywords" content="PC components, gaming accessories, custom PC builds, CPUs, GPUs, gaming peripherals">
+    <title>{% block title %}TechForge - Premium PC Components & Gaming Accessories{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="nav-brand">
+                <span class="brand-icon">&#9881;</span>
+                <span class="brand-text">Tech<span class="brand-accent">Forge</span></span>
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation">&#9776;</button>
+            <div class="nav-menu">
+                <ul class="nav-links">
+                    <li><a href="{% url 'home' %}" class="nav-link">Home</a></li>
+                    <li class="nav-dropdown">
+                        <a href="{% url 'products:list' %}" class="nav-link">Products &#9662;</a>
+                        <div class="dropdown-content">
+                            <a href="{% url 'products:list' %}?category=components">PC Components</a>
+                            <a href="{% url 'products:list' %}?category=accessories">Gaming Accessories</a>
+                            <a href="{% url 'products:list' %}?category=builds">Custom PC Builds</a>
+                        </div>
+                    </li>
+                    <li><a href="{% url 'custom_pc_builder:builder' %}" class="nav-link">PC Builder</a></li>
+                    <li><a href="{% url 'about' %}" class="nav-link">About</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <a href="{% url 'cart:detail' %}" class="btn btn-cart">
+                        Cart {% with cart_count=request.session.cart_count %}<span class="cart-badge" id="cart-count">{{ cart_count|default:0 }}</span>{% endwith %}
+                    </a>
+                    {% if user.is_authenticated %}
+                    <div class="nav-dropdown">
+                        <a href="#" class="nav-link">&#128100; {{ user.username }} &#9662;</a>
+                        <div class="dropdown-content">
+                            <a href="{% url 'accounts:profile' %}">My Profile</a>
+                            <a href="{% url 'accounts:order_history' %}">Order History</a>
+                            <a href="{% url 'accounts:saved_builds' %}">Saved Builds</a>
+                            <a href="{% url 'accounts:addresses' %}">Addresses</a>
+                            <hr>
+                            <a href="{% url 'accounts:logout' %}">Logout</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a href="{% url 'accounts:login' %}" class="btn btn-outline">Login</a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-primary">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="message message-{{ message.tags }}">
+            <span>{{ message }}</span>
+            <button class="message-close">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3><span class="brand-accent">TechForge</span></h3>
+                    <p>Premium PC components and gaming accessories. We build the future, one component at a time.</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link" aria-label="Twitter">&#120143;</a>
+                        <a href="#" class="social-link" aria-label="YouTube">&#9654;</a>
+                        <a href="#" class="social-link" aria-label="Instagram">&#128247;</a>
+                        <a href="#" class="social-link" aria-label="Discord">&#9819;</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Shop</h4>
+                    <ul>
+                        <li><a href="{% url 'products:list' %}">All Products</a></li>
+                        <li><a href="{% url 'products:list' %}?category=components">PC Components</a></li>
+                        <li><a href="{% url 'products:list' %}?category=accessories">Gaming Accessories</a></li>
+                        <li><a href="{% url 'custom_pc_builder:builder' %}">Custom PC Builder</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Shipping Info</a></li>
+                        <li><a href="#">Returns & Warranty</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="{% url 'about' %}">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section newsletter">
+                    <h4>Stay Updated</h4>
+                    <p>Get the latest deals and tech news.</p>
+                    <form class="newsletter-form" method="post" action="#">
+                        {% csrf_token %}
+                        <input type="email" placeholder="your@email.com" required class="newsletter-input">
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TechForge. All rights reserved.</p>
+                <div class="payment-methods">
+                    <span>&#128179;</span>
+                    <span>&#9733;</span>
+                    <span>&#9888;</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/cart.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Confirmed - TechForge{% endblock %}
+
+{% block content %}
+<section class="section confirmation-section">
+    <div class="container">
+        <div class="confirmation-card">
+            <div class="confirmation-icon">&#10003;</div>
+            <h1>Order Confirmed!</h1>
+            <p>Thank you for your purchase. Your order has been placed successfully.</p>
+            <div class="order-details">
+                <div class="detail-row">
+                    <span>Order Number</span>
+                    <span>#{{ order.id }}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Order Date</span>
+                    <span>{{ order.created_at|date:"F d, Y" }}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Status</span>
+                    <span class="order-status pending">{{ order.get_status_display }}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Total</span>
+                    <span>${{ order.total }}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Shipping to</span>
+                    <span>{{ order.shipping_name }}, {{ order.shipping_city }}, {{ order.shipping_state }}</span>
+                </div>
+            </div>
+            <p class="confirmation-email">A confirmation email will be sent to {{ order.email }}.</p>
+            <div class="confirmation-actions">
+                <a href="{% url 'accounts:order_history' %}" class="btn btn-outline">View Orders</a>
+                <a href="{% url 'products:list' %}" class="btn btn-primary">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

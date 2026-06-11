@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Account - TechForge{% endblock %}
+
+{% block content %}
+<section class="section auth-section">
+    <div class="container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Join the TechForge community</p>
+            </div>
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <div class="field-errors">
+                        {% for error in field.errors %}
+                        <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                <p class="auth-alt">Already have an account? <a href="{% url 'accounts:login' %}">Login</a></p>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

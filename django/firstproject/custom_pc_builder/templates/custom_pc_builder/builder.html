@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load product_extras %}
 
 {% block title %}PC Builder - TechForge{% endblock %}
 
@@ -22,14 +23,16 @@
                         <button class="btn btn-outline btn-sm select-component" data-type="{{ ctype }}">Select</button>
                     </div>
                     <div class="builder-component-selected" id="selected-{{ ctype }}">
-                        {% if ctype in selected_components %}
+                        {% with component=selected_components|get_item:ctype %}
+                        {% if component %}
                         <div class="selected-component">
-                            <span class="selected-name">{{ selected_components|dictsort:ctype }}</span>
-                            <span class="selected-price">${{ selected_components|dictsort:ctype }}</span>
+                            <span class="selected-name">{{ component.name }}</span>
+                            <span class="selected-price">${{ component.price }}</span>
                         </div>
                         {% else %}
                         <p class="no-selection">No component selected</p>
                         {% endif %}
+                        {% endwith %}
                     </div>
                 </div>
                 {% endfor %}
@@ -41,11 +44,13 @@
                         {% for ctype, ctype_label in component_types %}
                         <div class="build-summary-item" id="summary-{{ ctype }}">
                             <span class="summary-label">{{ ctype_label }}</span>
-                            {% if ctype in selected_components %}
-                            <span class="summary-value" id="price-{{ ctype }}">${{ selected_components|dictsort:ctype }}</span>
+                            {% with component=selected_components|get_item:ctype %}
+                            {% if component %}
+                            <span class="summary-value" id="price-{{ ctype }}">${{ component.price }}</span>
                             {% else %}
                             <span class="summary-value">-</span>
                             {% endif %}
+                            {% endwith %}
                         </div>
                         {% endfor %}
                     </div>
@@ -85,7 +90,7 @@
 {% block extra_js %}
 <script src="{% static 'js/pc_builder.js' %}"></script>
 <script>
-const componentTypes = {{ component_types|safe }};
+const componentTypes = {{ component_types_json|safe }};
 const csrfToken = '{{ csrf_token }}';
 const addToCartUrl = "{% url 'cart:add' 0 %}";
 const saveBuildUrl = "{% url 'custom_pc_builder:save' %}";

@@ -34,6 +34,7 @@ def builder(request):
 
     context = {
         'component_types': component_types,
+        'component_types_json': [{'key': k, 'label': v} for k, v in component_types],
         'selected_components': selected_components,
         'total': total,
     }

@@ -14,7 +14,15 @@ def product_list(request):
     q = request.GET.get('q', '')
 
     if selected_category:
-        products = products.filter(category__slug=selected_category)
+        try:
+            cat = Category.objects.get(slug=selected_category)
+            child_slugs = list(cat.children.values_list('slug', flat=True))
+            if child_slugs:
+                products = products.filter(category__slug__in=child_slugs)
+            else:
+                products = products.filter(category__slug=selected_category)
+        except Category.DoesNotExist:
+            products = products.filter(category__slug=selected_category)
 
     if q:
         products = products.filter(

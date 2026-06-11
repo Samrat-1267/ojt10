@@ -1,570 +1,247 @@
-# Python + Django Notes
+# TechForge eCommerce Platform
 
-A concise reference for learning backend development using Python and Django.
+Premium PC components, gaming peripherals, and custom-built PCs. Shop the best tech hardware with Linus Tech Tips-inspired design.
 
----
+## Features
 
-# What is Django?
+### 🛍️ **Product Catalog**
+- **36 products** across 16 categories
+- PC Components: CPUs, GPUs, Motherboards, RAM, Storage, Power Supplies, Cooling, Cases
+- Gaming Accessories: Keyboards, Mice, Headsets, Monitors, Mousepads
+- Custom PC Builds: Pre-built gaming rigs
 
-Django is a high-level Python web framework used to build web applications efficiently. It follows the **MVT (Model-View-Template)** architectural pattern and provides many built-in tools for rapid development.
+### 🛠️ **Custom PC Builder**
+- Select components and check compatibility in real-time
+- Live price calculation
+- Save builds for later
+- Expert-tested configurations
 
-Key built-in features include:
+### 👤 **User System**
+- Registration & Authentication
+- User Profiles with address management
+- Order History
+- Saved Custom Builds
 
-- URL routing
-- ORM (Object Relational Mapping)
-- Authentication system
-- Admin panel
-- Security protections
-- Template engine
+### 🛒 **Shopping Cart & Checkout**
+- Add/remove/update cart items
+- Secure checkout flow
+- Shipping calculation
+- Order confirmation
 
----
+### ⚡ **Tech Stack**
+- **Backend**: Django (Python)
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Database**: SQLite (development)
+- **No external frameworks** (React, Vue, Bootstrap, Tailwind)
 
-# Why Django?
+## Installation & Setup
 
-Django is widely used because it allows developers to create web applications quickly while maintaining clean project structure.
+### Prerequisites
+- Python 3.8+
+- Virtual environment
 
-## Advantages
+### Steps
 
-- Rapid development
-- Secure by default
-- Scalable
-- Clean architecture
-- Built-in admin interface
-- Strong documentation
-- Python-based syntax
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Samrat-1267/ojt10.git
+   cd ojt10/django/firstproject
+   ```
 
----
+2. Create and activate virtual environment:
+   ```bash
+   python -m venv env
+   .\env\Scripts\activate
+   ```
 
-# Python Prerequisites
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-Before learning Django, these Python concepts should be understood:
+4. Run migrations:
+   ```bash
+   python manage.py migrate
+   ```
 
-## Essential Topics
+5. Seed sample data:
+   ```bash
+   python manage.py seed_data
+   ```
 
-- Variables
-- Data types
-- Operators
-- Functions
-- Loops
-- Conditional statements
-- Lists
-- Tuples
-- Dictionaries
-- File handling
-- Modules
-- Classes and objects
-- OOP basics
-- Exception handling
-- Virtual environments
-- Package management (`pip`)
+6. Run the development server:
+   ```bash
+   python manage.py runserver
+   ```
 
-## Example
+## Access the Application
 
-```python
-def greet(name):
-	return f"Hello, {name}"
+- **Homepage**: http://127.0.0.1:8000/
+- **Products**: http://127.0.0.1:8000/products/
+- **PC Builder**: http://127.0.0.1:8000/builder/
+- **Cart**: http://127.0.0.1:8000/cart/
+- **Admin Panel**: http://127.0.0.1:8000/admin/
+
+## Login Credentials
+
+- **Admin**: `admin` / `admin123`
+- **Demo User**: `demo` / `demo123`
+
+## Project Structure
+
 ```
-
----
-
-# Installing Django
-
-## Create Virtual Environment
-
-```bash
-python -m venv venv
-source venv/bin/activate
-```
-
-## Install Django
-
-```bash
-pip install django
-```
-
-## Check Installed Version
-
-```bash
-python -m django --version
-```
-
----
-
-# Creating a Django Project
-
-```bash
-django-admin startproject myproject
-```
-
-Generated structure:
-
-```text
-myproject/
-├── manage.py
-├── myproject/
-│   ├── settings.py
-│   ├── urls.py
-│   ├── asgi.py
-│   └── wsgi.py
-```
-
----
-
-# Important Files
-
-| File | Purpose |
-|---|---|
-| `manage.py` | Project command utility |
-| `settings.py` | Configuration settings |
-| `urls.py` | URL declarations |
-| `asgi.py` | ASGI deployment |
-| `wsgi.py` | WSGI deployment |
-
----
-
-# Project vs App
-
-## Project
-
-The complete web application.
-
-## App
-
-A module inside the project that handles a specific functionality.
-
-Example:
-
-- Project = School management system
-- App = Students
-- App = Attendance
-- App = Teachers
-
-Create app:
-
-```bash
-python manage.py startapp students
-```
-
----
-
-# Common Django Commands
-
-## Run Development Server
-
-```bash
-python manage.py runserver
-```
-
-Default address:
-
-```text
-http://127.0.0.1:8000
-```
-
-## Create Migrations
-
-```bash
-python manage.py makemigrations
-```
-
-## Apply Migrations
-
-```bash
-python manage.py migrate
-```
-
-## Create Superuser
-
-```bash
-python manage.py createsuperuser
-```
-
----
-
-# MVT Architecture
-
-Django follows the **MVT pattern**.
-
-## Model
-
-Handles database structure.
-
-## View
-
-Handles application logic.
-
-## Template
-
-Handles user interface rendering.
-
-Request flow:
-
-```text
-User Request
-	↓
-URL
-	↓
-View
-	↓
-Model
-	↓
-Template
-	↓
-Response
-```
-
----
-
-# Models
-
-Models define database tables.
-
-Example:
-
-```python
-from django.db import models
-
-class Student(models.Model):
-	name = models.CharField(max_length=100)
-	age = models.IntegerField()
-```
-
-## Notes
-
-- Each class represents a table
-- Each field represents a column
-- Django ORM manages SQL operations internally
-
----
-
-# Views
-
-Views process requests and return responses.
-
-Example:
-
-```python
-from django.http import HttpResponse
-
-def home(request):
-	return HttpResponse("Django page")
-```
-
----
-
-# URL Routing
-
-Maps URLs to views.
-
-Example:
-
-```python
-from django.urls import path
-from . import views
-
-urlpatterns = [
-	path('', views.home),
-]
-```
-
----
-
-# Templates
-
-Templates are HTML files used for frontend rendering.
-
-Example:
-
-```html
-<h1>{{ title }}</h1>
-```
-
----
-
-# Template Syntax
-
-## Variables
-
-```html
-{{ variable }}
-```
-
-## Loop
-
-```html
-{% for student in students %}
-	<p>{{ student.name }}</p>
-{% endfor %}
-```
-
-## Condition
-
-```html
-{% if user %}
-	<p>Logged in</p>
-{% endif %}
-```
-
----
-
-# Django ORM
-
-ORM allows database interaction using Python code.
-
-## Create
-
-```python
-Student.objects.create(name="Neo", age=16)
-```
-
-## Read
-
-```python
-Student.objects.all()
-```
-
-## Filter
-
-```python
-Student.objects.filter(age=16)
-```
-
-## Delete
-
-```python
-student.delete()
-```
-
----
-
-# Admin Panel
-
-Django includes a built-in administration interface.
-
-Register model:
-
-```python
-from django.contrib import admin
-from .models import Student
-
-admin.site.register(Student)
-```
-
-Access:
-
-```text
-/admin
-```
-
----
-
-# Database
-
-Default database:
-
-```text
-SQLite
-```
-
-Suitable for:
-
-- Learning
-- Testing
-- Small applications
-
-Common production database:
-
-- PostgreSQL
-
----
-
-# Static Files
-
-Used for frontend assets:
-
-- CSS
-- JavaScript
-- Images
-
-Directory:
-
-```text
-static/
-```
-
----
-
-# Media Files
-
-Used for uploaded content.
-
-Examples:
-
-- Images
-- Documents
-- PDFs
-
-Directory:
-
-```text
-media/
-```
-
----
-
-# Forms
-
-Django forms simplify input validation.
-
-Example:
-
-```python
-from django import forms
-
-class StudentForm(forms.Form):
-	name = forms.CharField()
-```
-
----
-
-# Authentication
-
-Django provides built-in authentication tools.
-
-Features:
-
-- Login
-- Logout
-- Signup
-- Password reset
-
-Useful for:
-
-- User dashboards
-- Portals
-- Management systems
-
----
-
-# Recommended Learning Order
-
-## Step 1
-
-Learn Python fundamentals:
-
-- Functions
-- Classes
-- Dictionaries
-- File handling
-
-## Step 2
-
-Learn Django basics:
-
-- Project creation
-- App creation
-- Views
-- URLs
-
-## Step 3
-
-Learn backend features:
-
-- Models
-- Migrations
-- ORM
-- Templates
-
-## Step 4
-
-Build CRUD applications
-
----
-
-# Typical Folder Layout
-
-```text
 project/
-├── manage.py
-├── app/
-│   ├── models.py
-│   ├── views.py
-│   ├── urls.py
-│   ├── templates/
-│   └── static/
+├── django/
+│   └── firstproject/
+│       ├── manage.py
+│       ├── firstproject/
+│       │   ├── settings.py
+│       │   ├── urls.py
+│       │   └── wsgi.py
+│       ├── apps/
+│       │   ├── products/
+│       │   ├── accounts/
+│       │   ├── cart/
+│       │   ├── orders/
+│       │   └── custom_pc_builder/
+│       ├── templates/
+│       ├── static/
+│       └── media/
+├── README.md
+└── requirements.txt
 ```
 
----
+## Apps
 
-# Useful Packages
+### 1. Products
+- Product catalog with categories
+- Product details with specifications
+- Reviews and ratings
+- Search and filtering
 
-Additional packages often used with Django:
+### 2. Accounts
+- User registration and authentication
+- Profile management
+- Address book
+- Order history
+- Saved builds
 
-```bash
-pip install django
-pip install pillow
-pip install django-crispy-forms
-pip install django-filter
-```
+### 3. Cart
+- Session-based or user-based cart
+- Add/remove/update items
+- Cart summary and shipping calculation
 
----
+### 4. Orders
+- Secure checkout flow
+- Order review and confirmation
+- Order history for users
 
-# Common Mistakes
+### 5. Custom PC Builder
+- Component selection with compatibility checking
+- Real-time price calculation
+- Save and load builds
 
-## App not registered
+## Design & UI
 
-Add app in `settings.py`:
+### Features
+- **Modern dark theme** with premium aesthetics
+- **Responsive design** for all devices
+- **Smooth animations** and transitions
+- **Linus Tech Tips** inspired tech aesthetic
+- **Fast loading** with optimized assets
 
-```python
-INSTALLED_APPS = [
-	'students',
-]
-```
+### Technologies Used
+- **HTML5** for semantic markup
+- **CSS3** with custom animations
+- **Vanilla JavaScript** for interactivity
+- **Django templates** for dynamic content
 
-## Migrations not applied
+## Development Features
 
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
+### Admin Panel
+- Full CRUD for all models
+- Product management with image uploads
+- Order tracking and fulfillment
+- User and address management
 
-## Incorrect URL configuration
+### Database Models
+- **Category**: Product categories and subcategories
+- **Product**: All products with specifications
+- **Review**: Customer reviews and ratings
+- **Cart/CartItem**: Shopping cart management
+- **Order/OrderItem**: Order processing
+- **SavedBuild**: Custom PC builds
 
-Check:
+### API Endpoints
+- Product listing and details
+- Authentication endpoints
+- Cart management
+- Checkout flow
+- PC builder compatibility checking
 
-- project `urls.py`
-- app `urls.py`
+## Sample Data
 
-## Static files not loading
+The database includes:
 
-Usually caused by:
+### Featured Products
+- **AMD Ryzen 9 7950X** - $699.99 (Featured, Bestseller)
+- **NVIDIA GeForce RTX 4090** - $1,799.99 (Featured, Bestseller)
+- **ASUS ROG Crosshair X670E Hero** - $499.99 (Featured)
+- **Wooting 60HE+** - $199.99 (Featured, Bestseller)
 
-- Incorrect file path
-- Missing static settings
-- Missing template configuration
+### Custom Builds
+- **The Ultimate Gaming Rig** - $4,999.99 (Featured)
+- **Streamer Pro Build** - $3,499.99 (Featured)
+- **Value Gaming Build** - $1,499.99
 
----
+### Reviews
+- 10+ sample reviews across products
+- Ratings from 4-5 stars
+- Real customer feedback
 
-# Quick Command Reference
+## File Structure
 
-```bash
-python manage.py runserver
-python manage.py startapp appname
-python manage.py makemigrations
-python manage.py migrate
-python manage.py createsuperuser
-```
+### Templates
+- `templates/base.html` - Main layout with navbar, footer
+- `templates/home.html` - Homepage with featured products
+- `templates/products/` - Product catalog and details
+- `templates/accounts/` - User authentication and profiles
+- `templates/cart/` - Shopping cart
+- `templates/orders/` - Checkout flow
+- `templates/custom_pc_builder/` - PC builder interface
 
----
+### Static Files
+- `static/css/style.css` - Main stylesheet
+- `static/js/main.js` - General UI interactions
+- `static/js/cart.js` - Cart functionality
+- `static/js/pc_builder.js` - PC builder interactions
 
-# Final Notes
+### Python Files
+- All Django apps with models, views, urls, forms, admin
+- Management command for data seeding
 
-Django is useful for building:
+## How It Works
 
-- Web applications
-- CRUD systems
-- Admin dashboards
-- APIs
-- School projects
-- Backend services
+1. **User browses** the product catalog or uses the PC builder
+2. **Adds items** to cart (session-based or user-authenticated)
+3. **Checks out** with shipping information
+4. **Reviews order** before final submission
+5. **Receives confirmation** with order details
+6. **Tracks order** in account history
 
+## Future Enhancements
+
+- Payment gateway integration (Stripe/PayPal)
+- Advanced filtering and search
+- Product comparison tool
+- Wishlists
+- Bulk ordering
+- API for mobile apps
+
+## License
+
+This project is part of an educational exercise. All code is provided for learning purposes.
+
+## Support
+
+For issues or questions, please check the project documentation or contact the maintainer.

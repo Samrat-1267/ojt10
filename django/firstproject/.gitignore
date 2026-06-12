@@ -1,9 +1,0 @@
-__pycache__/
-*.pyc
-*.pyo
-env/
-db.sqlite3
-media/
-.DS_Store
-Thumbs.db
-*.log

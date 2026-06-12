@@ -48,7 +48,7 @@
                 <p>Keyboards, Mice, Headsets & more</p>
             </a>
             <a href="{% url 'custom_pc_builder:builder' %}" class="category-card">
-                <div class="category-icon">&#9881;&#65039;</div>
+                <div class="category-icon">&#9881;</div>
                 <h3>Custom PC Builds</h3>
                 <p>Fully customized gaming rigs</p>
             </a>
@@ -61,109 +61,12 @@
     </div>
 </section>
 
-{% if featured_products %}
-<section class="section featured-section">
-    <div class="container">
-        <div class="section-header">
-            <h2>Featured Products</h2>
-            <p>Curated picks for peak performance</p>
-            <a href="{% url 'products:list' %}" class="btn btn-outline">View All</a>
-        </div>
-        <div class="products-grid">
-            {% for product in featured_products %}
-            <div class="product-card">
-                <div class="product-image">
-                    {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                    {% else %}
-                    <div class="product-placeholder">
-                        <span>{{ product.name|first }}</span>
-                    </div>
-                    {% endif %}
-                    {% if product.compare_price %}
-                    <span class="product-badge sale">Sale</span>
-                    {% endif %}
-                    {% if not product.in_stock %}
-                    <span class="product-badge out-of-stock">Out of Stock</span>
-                    {% endif %}
-                </div>
-                <div class="product-info">
-                    <p class="product-category">{{ product.category.name }}</p>
-                    <h3 class="product-name">{{ product.name }}</h3>
-                    <div class="product-rating">
-                        {% if product.review_count > 0 %}
-                        <span class="stars">{% for i in "12345" %}{% if forloop.counter <= product.rating_avg %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}</span>
-                        <span class="review-count">({{ product.review_count }})</span>
-                        {% endif %}
-                    </div>
-                    <div class="product-price">
-                        {% if product.compare_price %}
-                        <span class="price-old">${{ product.compare_price }}</span>
-                        {% endif %}
-                        <span class="price-current">${{ product.price }}</span>
-                    </div>
-                    <div class="product-actions">
-                        <a href="{{ product.get_absolute_url }}" class="btn btn-outline btn-sm">Details</a>
-                        <button class="btn btn-primary btn-sm add-to-cart" data-product-id="{{ product.id }}">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-{% endif %}
-
-{% if best_sellers %}
-<section class="section best-sellers-section">
-    <div class="container">
-        <div class="section-header">
-            <h2>Best Sellers</h2>
-            <p>What everyone's buying right now</p>
-        </div>
-        <div class="products-grid">
-            {% for product in best_sellers %}
-            <div class="product-card">
-                <div class="product-image">
-                    {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                    {% else %}
-                    <div class="product-placeholder">
-                        <span>{{ product.name|first }}</span>
-                    </div>
-                    {% endif %}
-                    <span class="product-badge bestseller">Bestseller</span>
-                </div>
-                <div class="product-info">
-                    <p class="product-category">{{ product.category.name }}</p>
-                    <h3 class="product-name">{{ product.name }}</h3>
-                    <div class="product-rating">
-                        {% if product.review_count > 0 %}
-                        <span class="stars">{% for i in "12345" %}{% if forloop.counter <= product.rating_avg %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}</span>
-                        <span class="review-count">({{ product.review_count }})</span>
-                        {% endif %}
-                    </div>
-                    <div class="product-price">
-                        <span class="price-current">${{ product.price }}</span>
-                    </div>
-                    <div class="product-actions">
-                        <a href="{{ product.get_absolute_url }}" class="btn btn-outline btn-sm">Details</a>
-                        <button class="btn btn-primary btn-sm add-to-cart" data-product-id="{{ product.id }}">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-{% endif %}
-
 <section class="section builder-cta-section">
     <div class="container">
         <div class="cta-card">
             <div class="cta-content">
                 <h2>Custom PC Builder</h2>
-                <p>Select your components, check compatibility, and we'll build it for you. Perfect for gaming, content creation, and productivity.</p>
+                <p>Select your components, check compatibility, and we'll build it for you.</p>
                 <ul class="cta-features">
                     <li>&#10003; Real-time compatibility checking</li>
                     <li>&#10003; Live price calculation</li>
@@ -181,41 +84,7 @@
     </div>
 </section>
 
-{% if custom_builds %}
-<section class="section custom-builds-section">
-    <div class="container">
-        <div class="section-header">
-            <h2>Pre-Built Systems</h2>
-            <p>Ready to ship, battle-tested configurations</p>
-        </div>
-        <div class="products-grid">
-            {% for build in custom_builds %}
-            <div class="product-card product-card-featured">
-                <div class="product-image">
-                    {% if build.image %}
-                    <img src="{{ build.image.url }}" alt="{{ build.name }}">
-                    {% else %}
-                    <div class="product-placeholder build-placeholder">
-                        <span>&#9881;</span>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="product-info">
-                    <h3 class="product-name">{{ build.name }}</h3>
-                    <div class="product-price">
-                        <span class="price-current">${{ build.price }}</span>
-                    </div>
-                    <div class="product-actions">
-                        <a href="{{ build.get_absolute_url }}" class="btn btn-primary">View Details</a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-{% endif %}
-
+{% if reviews %}
 <section class="section reviews-section">
     <div class="container">
         <div class="section-header">
@@ -223,7 +92,6 @@
             <p>Join 50,000+ satisfied builders</p>
         </div>
         <div class="reviews-grid">
-            {% if reviews %}
             {% for review in reviews %}
             <div class="review-card">
                 <div class="review-stars">
@@ -239,44 +107,10 @@
                 </div>
             </div>
             {% endfor %}
-            {% else %}
-            <div class="review-card">
-                <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <p class="review-text">"Absolutely incredible build quality. My new gaming rig handles everything I throw at it with ease. The custom cable management is a work of art."</p>
-                <div class="review-author">
-                    <div class="review-avatar">S</div>
-                    <div>
-                        <p class="review-name">Sarah M.</p>
-                        <p class="review-product">Verified Buyer</p>
-                    </div>
-                </div>
-            </div>
-            <div class="review-card">
-                <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                <p class="review-text">"The PC Builder tool made it so easy to pick compatible parts. Everything arrived perfectly packaged and the performance is outstanding."</p>
-                <div class="review-author">
-                    <div class="review-avatar">J</div>
-                    <div>
-                        <p class="review-name">James K.</p>
-                        <p class="review-product">Verified Buyer</p>
-                    </div>
-                </div>
-            </div>
-            <div class="review-card">
-                <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
-                <p class="review-text">"Great selection of components at competitive prices. Shipping was fast and customer support was helpful when I had questions about compatibility."</p>
-                <div class="review-author">
-                    <div class="review-avatar">M</div>
-                    <div>
-                        <p class="review-name">Mike R.</p>
-                        <p class="review-product">Verified Buyer</p>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
         </div>
     </div>
 </section>
+{% endif %}
 
 <section class="section newsletter-section">
     <div class="container">

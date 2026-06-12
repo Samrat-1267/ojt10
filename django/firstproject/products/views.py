@@ -8,14 +8,6 @@ from .models import Category, Product, Review
 from .forms import ReviewForm
 import csv
 import os
-import requests
-import io
-import re
-import tempfile
-import shutil
-from urllib.parse import quote
-from django.core.files.base import ContentFile
-from icrawler.builtin import BingImageCrawler
 
 
 def product_list(request):
@@ -46,12 +38,11 @@ def product_list(request):
         '-price': '-price',
         'name': 'name',
         '-name': '-name',
-        'rating': '-rating_avg',
         '-created_at': '-created_at',
         'created_at': 'created_at',
     }
-    if sort in valid_sorts and sort != 'rating' and sort != '-rating':
-        products = products.order_by(sort)
+    if sort in valid_sorts:
+        products = products.order_by(valid_sorts[sort])
     elif sort == 'rating':
         products = products.annotate(avg_rating=Avg('reviews__rating')).order_by('-avg_rating')
 
@@ -114,78 +105,33 @@ def add_review(request, slug):
 
 
 def curation_view(request):
-    """Display all products from curation.csv for easy copying"""
     csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'curation.csv')
     products_list = []
-    products_with_images = set(Product.objects.filter(image__isnull=False).values_list('id', flat=True))
 
     if os.path.exists(csv_path):
         with open(csv_path, 'r', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 row['get_absolute_url'] = reverse('products:detail', args=[row['slug']])
-                row['has_image'] = str(int(row['id']) in products_with_images)
                 products_list.append(row)
 
-    context = {
-        'products': products_list,
-        'total_count': len(products_list),
-    }
-    return render(request, 'products/curation.html', context)
+    products_with_images = set(Product.objects.filter(image__isnull=False).values_list('id', flat=True))
+    for p in products_list:
+        pid = int(p['id'])
+        p['has_image'] = pid in products_with_images
+        if p['has_image']:
+            product = Product.objects.get(id=pid)
+            p['image_url'] = product.image.url
+        else:
+            p['image_url'] = ''
+
+    return render(request, 'products/curation.html', {'products': products_list, 'total_count': len(products_list)})
 
 
-@login_required
 def upload_curation_image(request, product_id):
-    """Handle image upload from curation page via click, drag-drop, or paste"""
     if request.method == 'POST' and request.FILES.get('image'):
         product = get_object_or_404(Product, id=product_id)
         product.image = request.FILES['image']
         product.save()
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({'success': True, 'image_url': product.image.url})
-        messages.success(request, f'Image uploaded for {product.name}')
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return JsonResponse({'success': False}, status=400)
+        messages.success(request, f'Image saved for {product.name}')
     return redirect('products:curation')
-
-
-def curation_image_json(request, product_id):
-    """Return image URL for a product (used by curation page to load existing images)"""
-    product = get_object_or_404(Product, id=product_id)
-    if product.image:
-        return JsonResponse({'image_url': product.image.url})
-    return JsonResponse({'image_url': None})
-
-
-@login_required
-def auto_fetch_image(request, product_id):
-    """Auto-fetch product image from Bing and save to product"""
-    product = get_object_or_404(Product, id=product_id)
-    query = f"{product.name} product"
-
-    tmpdir = tempfile.mkdtemp()
-    try:
-        crawler = BingImageCrawler(storage={'root_dir': tmpdir}, downloader_threads=1)
-        crawler.crawl(keyword=query, max_num=1)
-
-        files = os.listdir(tmpdir)
-        if files:
-            img_path = os.path.join(tmpdir, files[0])
-            ext = os.path.splitext(files[0])[1].lower()
-            if not ext:
-                ext = '.jpg'
-            filename = f"{product.slug}{ext}"
-
-            with open(img_path, 'rb') as f:
-                product.image.save(filename, ContentFile(f.read()), save=True)
-
-            shutil.rmtree(tmpdir)
-            return JsonResponse({'success': True, 'image_url': product.image.url})
-
-        shutil.rmtree(tmpdir)
-        return JsonResponse({'success': False, 'error': 'No image found'}, status=404)
-
-    except Exception as e:
-        if os.path.exists(tmpdir):
-            shutil.rmtree(tmpdir)
-        return JsonResponse({'success': False, 'error': str(e)}, status=500)

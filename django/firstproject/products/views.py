@@ -115,14 +115,18 @@ def curation_view(request):
                 row['get_absolute_url'] = reverse('products:detail', args=[row['slug']])
                 products_list.append(row)
 
-    products_with_images = set(Product.objects.filter(image__isnull=False).values_list('id', flat=True))
     for p in products_list:
         pid = int(p['id'])
-        p['has_image'] = pid in products_with_images
-        if p['has_image']:
+        try:
             product = Product.objects.get(id=pid)
-            p['image_url'] = product.image.url
-        else:
+            if product.image and product.image.name:
+                p['has_image'] = True
+                p['image_url'] = product.image.url
+            else:
+                p['has_image'] = False
+                p['image_url'] = ''
+        except Product.DoesNotExist:
+            p['has_image'] = False
             p['image_url'] = ''
 
     return render(request, 'products/curation.html', {'products': products_list, 'total_count': len(products_list)})

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TechForge — PC Components Nepal</title>
+<meta name="description" content="TechForge PC components and custom PC builder with Nepal Rupee pricing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#08090f;--panel:#151622;--panel2:#1b1c2a;--line:#2a2b42;--text:#f4f4fa;--muted:#9a9bad;--a:#6675ff;--b:#10c7d8;--good:#20d7a0}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 50% 0,#181a35 0,#090a11 42%,#07080d 100%);color:var(--text);font-family:Inter,system-ui,sans-serif}a{color:inherit;text-decoration:none}button,input,select{font:inherit}.nav{position:sticky;top:0;z-index:20;height:70px;border-bottom:1px solid #252638;background:rgba(8,9,15,.86);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:space-between;padding:0 7%}.brand{font-size:22px;font-weight:800}.brand span{color:#19b8e5}.links{display:flex;gap:28px;color:#b8b8c8}.links a:hover{color:#fff}.nav-actions{display:flex;gap:10px}.btn{border:1px solid #3a3c61;border-radius:12px;background:#171824;color:#fff;padding:11px 18px;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-2px);border-color:#6675ff}.primary{border:0;background:linear-gradient(110deg,#6468ee,#0dc6d5);font-weight:700}.hero{padding:90px 7% 60px;text-align:center}.hero h1{font-size:clamp(42px,6vw,78px);margin:0 auto 20px;line-height:1.03;letter-spacing:-3px}.gradient{background:linear-gradient(90deg,#eee,#6675ff,#14c7d7);-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{max-width:700px;margin:0 auto 30px;color:var(--muted);font-size:18px;line-height:1.7}.hero-actions{display:flex;justify-content:center;gap:12px}.stats{display:flex;justify-content:center;gap:70px;margin-top:55px}.stat strong{display:block;font-size:30px;color:#5f8fff}.stat span{color:var(--muted);font-size:13px}.section{padding:45px 7%}.section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:24px}.section h2{font-size:30px;margin:0}.muted{color:var(--muted)}.toolbar{display:flex;gap:10px;flex-wrap:wrap}.search{min-width:250px;background:#11121c;border:1px solid var(--line);color:#fff;padding:12px 14px;border-radius:11px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:18px}.card{background:linear-gradient(180deg,#191a28,#12131d);border:1px solid #2b2c40;border-radius:18px;overflow:hidden;transition:.25s}.card:hover{transform:translateY(-6px);border-color:#565a91;box-shadow:0 18px 45px #0008}.pic{height:180px;background:#0c0d14;display:grid;place-items:center;padding:15px}.pic img{width:100%;height:100%;object-fit:contain}.info{padding:16px}.tag{font-size:11px;color:#10d0df;text-transform:uppercase;letter-spacing:1px}.name{font-weight:700;margin:7px 0}.price{font-size:21px;font-weight:800;color:#10c9d9}.old{font-size:12px;color:#77798a;text-decoration:line-through;margin-left:7px}.row{display:flex;gap:8px;margin-top:14px}.row .btn{flex:1}.builder{display:grid;grid-template-columns:1.5fr .9fr;gap:22px}.case{min-height:430px;border:1px solid #363955;border-radius:22px;background:linear-gradient(145deg,#121522,#090b11);display:grid;place-items:center;position:relative;overflow:hidden}.case:before{content:"";position:absolute;width:320px;height:320px;border:2px solid #252b50;border-radius:22px;box-shadow:inset 0 0 80px #5362ff18}.case-inner{position:relative;width:270px;padding:18px;border:1px solid #3b416b;border-radius:16px;background:#111421dd;box-shadow:0 0 45px #5362ff20}.slot{border:1px dashed #515775;border-radius:9px;margin:9px 0;padding:12px;text-align:center;color:#8f93aa;font-size:12px}.build-list{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}.build-item{display:flex;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid #2a2b3a}.build-item:last-child{border:0}.total{font-size:28px;font-weight:800;margin:18px 0;color:#fff}.compat{background:#103b38;color:#24d9a4;padding:12px;border-radius:10px;font-size:13px}.category{display:flex;gap:10px;overflow:auto;padding-bottom:8px}.chip{white-space:nowrap}.footer{padding:40px 7%;border-top:1px solid #242536;color:#88899a;text-align:center;margin-top:50px}.empty{padding:60px;text-align:center;color:var(--muted);grid-column:1/-1}.toast{position:fixed;right:20px;bottom:20px;background:#181a27;border:1px solid #45486a;padding:14px 18px;border-radius:12px;transform:translateY(120px);transition:.25s;z-index:50}.toast.show{transform:translateY(0)}@media(max-width:800px){.links{display:none}.nav{padding:0 4%}.hero,.section{padding-left:4%;padding-right:4%}.stats{gap:20px;flex-wrap:wrap}.builder{grid-template-columns:1fr}.hero h1{letter-spacing:-2px}.hero-actions{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<nav class="nav">
+<a class="brand" href="#">⚙ Tech<span>Forge</span></a>
+<div class="links"><a href="#home">Home</a><a href="#products">Products</a><a href="#builder">PC Builder</a><a href="#about">About</a></div>
+<div class="nav-actions"><button class="btn" onclick="showCart()">Cart <b id="count">0</b></button><button class="btn">Login</button><button class="btn primary">Register</button></div>
+</nav>
+
+<header class="hero" id="home">
+<h1>Build <span class="gradient">Beyond Limits</span></h1>
+<p>Premium PC components, gaming peripherals, and custom-built rigs — with prices displayed in Nepalese Rupees.</p>
+<div class="hero-actions"><a class="btn primary" href="#products">Shop Components</a><a class="btn" href="#builder">Build Your PC</a></div>
+<div class="stats"><div class="stat"><strong>50+</strong><span>Products</span></div><div class="stat"><strong>Rs 0</strong><span>Hidden fees</span></div><div class="stat"><strong>24/7</strong><span>Build planning</span></div></div>
+</header>
+
+<section class="section" id="products">
+<div class="section-head"><div><h2>PC Components</h2><p class="muted">Sample Nepal market prices — verify before purchase.</p></div><div class="toolbar"><input class="search" id="search" placeholder="Search CPU, GPU, RAM..." oninput="render()"></div></div>
+<div class="category"><button class="btn chip" onclick="setCat('All')">All</button><button class="btn chip" onclick="setCat('CPU')">CPU</button><button class="btn chip" onclick="setCat('GPU')">GPU</button><button class="btn chip" onclick="setCat('Motherboard')">Motherboard</button><button class="btn chip" onclick="setCat('RAM')">RAM</button><button class="btn chip" onclick="setCat('Storage')">Storage</button><button class="btn chip" onclick="setCat('PSU')">PSU</button><button class="btn chip" onclick="setCat('Case')">Case</button></div>
+<div class="grid" id="productsGrid"></div>
+</section>
+
+<section class="section" id="builder">
+<div class="section-head"><div><h2>Interactive PC Builder</h2><p class="muted">Choose compatible parts and watch the total update in NPR.</p></div></div>
+<div class="builder">
+<div class="case"><div class="case-inner"><h3 style="text-align:center;margin:0 0 12px">Your PC Case</h3><div class="slot">GPU slot</div><div class="slot">Motherboard</div><div class="slot">CPU + Cooler</div><div class="slot">RAM</div><div class="slot">SSD / Storage</div><div class="slot">Power Supply</div></div></div>
+<div class="build-list"><h3>Build Summary</h3><div id="buildList"></div><div class="total" id="total">Rs 0</div><div class="compat">✓ Compatibility checker ready</div><button class="btn primary" style="width:100%;margin-top:15px" onclick="addBuild()">Add Build to Cart</button></div>
+</div>
+</section>
+
+<section class="section" id="about"><div class="card" style="padding:25px"><h2>TechForge</h2><p class="muted">A modern PC shopping and custom-build demo for Nepal. Product prices are editable in the JavaScript data and are intended as sample market values, not guaranteed live quotations.</p></div></section>
+<footer class="footer">© 2026 TechForge · Built for PC enthusiasts in Nepal · Prices shown in NPR</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+const products=[
+{id:1,c:'CPU',name:'AMD Ryzen 5 5600',spec:'6C / 12T · AM4',price:20999,img:'https://dummyimage.com/600x400/10131d/67d7ff&text=Ryzen+5+5600'},
+{id:2,c:'CPU',name:'Intel Core i5-12400F',spec:'6C / 12T · LGA1700',price:21999,img:'https://dummyimage.com/600x400/10131d/67d7ff&text=Core+i5-12400F'},
+{id:3,c:'GPU',name:'NVIDIA RTX 4060 8GB',spec:'8GB GDDR6 · 1080p/1440p',price:59999,img:'https://dummyimage.com/600x400/10131d/67d7ff&text=RTX+4060'},
+{id:4,c:'Motherboard',name:'MSI B550M PRO-VDH',spec:'AM4 · B550 · mATX',price:14999,img:'https://dummyimage.com/600x400/10131d/67d7ff&text=B550+Motherboard'},
+{id:5,c:'RAM',name:'16GB DDR4 3200MHz',spec:'2×8GB Dual Channel',price:9999,img:'https://dummyimage.com/600x400/10131d/67d7ff&text=16GB+DDR4'},
+{id:6,c:'Storage',name:'1TB NVMe SSD',spec:'PCIe NVMe · 1TB',price:10999,img:'https://dummyimage.com/600x400/10131d/67d7ff&text=1TB+NVMe+SSD'},
+{id:7,c:'PSU',name:'650W 80+ Bronze PSU',spec:'650W · 80+ Bronze',price:8499,img:'https://dummyimage.com/600x400/10131d/67d7ff&text=650W+PSU'},
+{id:8,c:'Case',name:'RGB Gaming Mid Tower',spec:'ATX · Tempered Glass',price:7999,img:'https://dummyimage.com/600x400/10131d/67d7ff&text=RGB+PC+Case'},
+{id:9,c:'GPU',name:'AMD Radeon RX 7600 8GB',spec:'8GB GDDR6 · 1080p',price:41999,img:'https://dummyimage.com/600x400/10131d/67d7ff&text=RX+7600'},
+{id:10,c:'Storage',name:'512GB NVMe SSD',spec:'PCIe NVMe · 512GB',price:6499,img:'https://dummyimage.com/600x400/10131d/67d7ff&text=512GB+NVMe'}
+];
+let cat='All',cart=[],build={};
+const money=n=>'Rs '+n.toLocaleString('en-IN');
+function setCat(c){cat=c;render()}
+function render(){
+ const q=(document.getElementById('search').value||'').toLowerCase();
+ const list=products.filter(p=>(cat==='All'||p.c===cat)&&(!q||(p.name+' '+p.spec+' '+p.c).toLowerCase().includes(q)));
+ document.getElementById('productsGrid').innerHTML=list.length?list.map(p=>`<article class="card"><div class="pic"><img src="${p.img}" alt="${p.name}"></div><div class="info"><div class="tag">${p.c}</div><div class="name">${p.name}</div><div class="muted">${p.spec}</div><div class="price">${money(p.price)}</div><div class="row"><button class="btn" onclick="selectBuild(${p.id})">Use in Build</button><button class="btn primary" onclick="addCart(${p.id})">Add to Cart</button></div></div></article>`).join(''):'<div class="empty">No products found.</div>';
+ updateBuild();
+}
+function addCart(id){cart.push(id);document.getElementById('count').textContent=cart.length;toast('Added to cart')}
+function selectBuild(id){const p=products.find(x=>x.id===id);build[p.c]=p;toast(p.name+' added to build');updateBuild();document.getElementById('builder').scrollIntoView({behavior:'smooth'})}
+function updateBuild(){
+ const el=document.getElementById('buildList'); if(!el)return;
+ el.innerHTML=Object.keys(build).length?Object.values(build).map(p=>`<div class="build-item"><span>${p.c}<br><b>${p.name}</b></span><span>${money(p.price)}</span></div>`).join(''):'<p class="muted">Select components from the shop.</p>';
+ document.getElementById('total').textContent=money(Object.values(build).reduce((s,p)=>s+p.price,0));
+}
+function addBuild(){Object.keys(build).forEach(k=>cart.push(build[k].id));document.getElementById('count').textContent=cart.length;toast('Build added to cart')}
+function showCart(){toast(cart.length?'Cart has '+cart.length+' item(s)':'Your cart is empty')}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+render();
+</script>
+</body>
+</html>
